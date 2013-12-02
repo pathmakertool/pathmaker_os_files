@@ -1,0 +1,498 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9E62A79D-7BDA-48CC-9311-27E4BADE9133}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PathMaker</RootNamespace>
+    <AssemblyName>PathMaker</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>D:\_JEFFK\DEV_DEBUG_WARS\PathMaker_Local\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Unc</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <InstallUrl>\\localhost\PathMaker\</InstallUrl>
+    <ProductName>PathMaker</ProductName>
+    <PublisherName>Convergys</PublisherName>
+    <WebPage>publish.htm</WebPage>
+    <ApplicationRevision>26</ApplicationRevision>
+    <ApplicationVersion>1.6.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>PathMaker-Logo.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>FE45DBA578BEAB2A1A777A54643D3AF2D60E976E</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>PathMaker_2_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Word, Version=12.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="PathRunnerBackgroundWorker.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DateForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DateForm.Designer.cs">
+      <DependentUpon>DateForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ExcelActions.cs" />
+    <Compile Include="PromptChangesList.cs" />
+    <Compile Include="PropertyEditors\StartForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\StartForm.Designer.cs">
+      <DependentUpon>StartForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ValidateResultsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ValidateResultsForm.Designer.cs">
+      <DependentUpon>ValidateResultsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ValidateForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ValidateForm.Designer.cs">
+      <DependentUpon>ValidateForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LogoBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LogoBox.Designer.cs">
+      <DependentUpon>LogoBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PathMaker.Menus.cs">
+      <DependentUpon>PathMaker.cs</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProgressBarForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProgressBarForm.Designer.cs">
+      <DependentUpon>ProgressBarForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PromptRecordingList.cs" />
+    <Compile Include="PropertyEditors\GridRows\StartCommandTransitionRow.cs" />
+    <Compile Include="Shadows\IgnoredShadow.cs" />
+    <Compile Include="PropertyEditors\CommandsDataGridViewForm.cs" />
+    <Compile Include="PropertyEditors\GridRows\ChangeLogRow.cs" />
+    <Compile Include="PropertyEditors\ChangeLogForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\ChangeLogForm.Designer.cs">
+      <DependentUpon>ChangeLogForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyEditors\DocTitleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\DocTitleForm.Designer.cs">
+      <DependentUpon>DocTitleForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyEditors\ShadowForm.cs" />
+    <Compile Include="Shadows\CallSubDialogShadow.cs" />
+    <Compile Include="PropertyEditors\CallSubDialogForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\CallSubDialogForm.Designer.cs">
+      <DependentUpon>CallSubDialogForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyEditors\SubDialogForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\SubDialogForm.Designer.cs">
+      <DependentUpon>SubDialogForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyEditors\DataForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\DataForm.Designer.cs">
+      <DependentUpon>DataForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyEditors\DecisionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\DecisionForm.Designer.cs">
+      <DependentUpon>DecisionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyEditors\InteractionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\InteractionForm.Designer.cs">
+      <DependentUpon>InteractionForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyEditors\GridRows\TransitionRow.cs" />
+    <Compile Include="PropertyEditors\GridRows\PromptRow.cs" />
+    <Compile Include="PropertyEditors\PlayForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\PlayForm.Designer.cs">
+      <DependentUpon>PlayForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyEditors\GridRows\MaxHandlingRow.cs" />
+    <Compile Include="PropertyEditors\GridRows\ConfirmationPromptRow.cs" />
+    <Compile Include="PropertyEditors\CommonForm.Support.cs">
+      <DependentUpon>CommonForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyEditors\GridRows\CommandTransitionRow.cs" />
+    <Compile Include="PropertyEditors\CommonForm.cs" />
+    <Compile Include="PropertyEditors\GridRows\NameValuePairRow.cs" />
+    <Compile Include="PropertyEditors\GridRows\PromptTypeRow.cs" />
+    <Compile Include="Repair.Support.cs">
+      <DependentUpon>Repair.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Shadows\ChangeLogShadow.cs" />
+    <Compile Include="Common.cs" />
+    <Compile Include="Shadows\CommonShadow.cs" />
+    <Compile Include="Shadows\ConnectorShadow.cs" />
+    <Compile Include="Shadows\DataShadow.cs" />
+    <Compile Include="Shadows\DecisionShadow.cs" />
+    <Compile Include="Shadows\DocTitleShadow.cs" />
+    <Compile Include="EventSink.cs" />
+    <Compile Include="Shadows\HangUpShadow.cs" />
+    <Compile Include="Shadows\InteractionShadow.cs" />
+    <Compile Include="Shadows\OffPageRefShadow.cs" />
+    <Compile Include="Shadows\OnPageRefInShadow.cs" />
+    <Compile Include="Shadows\OnPageRefOutShadow.cs" />
+    <Compile Include="PathMaker.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PathMaker.Designer.cs">
+      <DependentUpon>PathMaker.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Shadows\PlayShadow.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Shadows\ReturnShadow.cs" />
+    <Compile Include="Shadows\Shadow.cs" />
+    <Compile Include="Shadows\StateShadow.cs" />
+    <Compile Include="Shadows\StateWithTransitionShadow.cs" />
+    <Compile Include="ShapeProperties.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repair.cs" />
+    <Compile Include="ShapeTypes.cs" />
+    <Compile Include="Shadows\StartShadow.cs" />
+    <Compile Include="Shadows\StatePrefixAndNumberManager.cs" />
+    <Compile Include="Strings.cs" />
+    <Compile Include="Shadows\SubDialogShadow.cs" />
+    <Compile Include="Table.cs" />
+    <Compile Include="Shadows\TransferShadow.cs" />
+    <Compile Include="TableColumns.cs" />
+    <Compile Include="PropertyEditors\TextEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="PropertyEditors\TextEditorForm.Designer.cs">
+      <DependentUpon>TextEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WordActions.cs" />
+    <Compile Include="XmlActions.cs" />
+    <Compile Include="XmlActions.Strings.cs">
+      <DependentUpon>XmlActions.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="DateForm.resx">
+      <DependentUpon>DateForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LogoBox.resx">
+      <DependentUpon>LogoBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProgressBarForm.resx">
+      <DependentUpon>ProgressBarForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropertyEditors\ChangeLogForm.resx">
+      <DependentUpon>ChangeLogForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropertyEditors\DocTitleForm.resx">
+      <DependentUpon>DocTitleForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropertyEditors\CallSubDialogForm.resx">
+      <DependentUpon>CallSubDialogForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropertyEditors\DataForm.resx">
+      <DependentUpon>DataForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropertyEditors\DecisionForm.resx">
+      <DependentUpon>DecisionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropertyEditors\InteractionForm.resx">
+      <DependentUpon>InteractionForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropertyEditors\PlayForm.resx">
+      <DependentUpon>PlayForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PropertyEditors\StartForm.resx">
+      <DependentUpon>StartForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PathMaker.resx">
+      <DependentUpon>PathMaker.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="PropertyEditors\SubDialogForm.resx">
+      <DependentUpon>SubDialogForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <Content Include="HLDTemplate.dot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="PathMaker_1_TemporaryKey.pfx" />
+    <None Include="PathMaker_2_TemporaryKey.pfx" />
+    <None Include="Resources\icn_new.png" />
+    <None Include="Resources\icn_file_open.png" />
+    <None Include="Resources\icn_save.png" />
+    <None Include="Resources\icn_print.png" />
+    <None Include="Resources\icn_generate_xml.png" />
+    <None Include="Resources\icn_generate_ui.png" />
+    <None Include="Resources\icn_cut.png" />
+    <None Include="Resources\icn_copy.png" />
+    <None Include="Resources\icn_paste.png" />
+    <None Include="Resources\icn_find.png" />
+    <None Include="Resources\icn_file.png" />
+    <None Include="Resources\icn_connectshapes.png" />
+    <None Include="Resources\icn_pointer.png" />
+    <None Include="Resources\icn_connectortool.png" />
+    <None Include="Resources\icn_glue_tool.png" />
+    <None Include="Resources\icn_dialog_state_count.png" />
+    <None Include="Resources\icn_export.png" />
+    <None Include="Resources\icn_import.png" />
+    <None Include="Resources\icn_shapes_window.png" />
+    <None Include="Resources\icn_size_position.png" />
+    <None Include="Resources\icn_new_page.png" />
+    <None Include="Resources\icn_text.png" />
+    <None Include="Resources\icn_line.png" />
+    <None Include="Resources\icn_fill.png" />
+    <None Include="Resources\icn_shadow.png" />
+    <None Include="Resources\icn_corner_radius.png" />
+    <None Include="Resources\icn_autocorrect.png" />
+    <None Include="Resources\icn_snap_glue.png" />
+    <None Include="Resources\icn_ruler.png" />
+    <None Include="Resources\icn_color_palette.png" />
+    <None Include="Resources\icn_bringtofront.png" />
+    <None Include="Resources\icn_sendtoback.png" />
+    <None Include="Resources\icn_bringforward.png" />
+    <None Include="Resources\icn_sendbackward.png" />
+    <None Include="Resources\icn_align_shapes.png" />
+    <None Include="Resources\icn_center_drawing.png" />
+    <None Include="Resources\icn_distributeshapes.png" />
+    <None Include="Resources\icn_checkbox.ico" />
+    <None Include="Resources\icn_undo.png" />
+    <None Include="Resources\education.png" />
+    <Content Include="Resources\icn_repeat.png" />
+    <Content Include="Resources\icn_spelling.ico" />
+    <Content Include="Resources\icn_stop.ico" />
+    <None Include="Resources\icn_stop.png" />
+    <Content Include="Resources\PathMaker-Logo.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PathMaker.vss">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="PathMaker.vst">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <EmbeddedResource Include="PropertyEditors\TextEditorForm.resx">
+      <DependentUpon>TextEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ValidateResultsForm.resx">
+      <DependentUpon>ValidateResultsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ValidateForm.resx">
+      <DependentUpon>ValidateForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="PathMaker_TemporaryKey.pfx" />
+    <None Include="PMConversion.vst" />
+    <None Include="Properties\app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Content Include="VUITemplate.dot">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="AxMicrosoft.Office.Interop.VisOcx">
+      <Guid>{F1A8DFE4-BC61-48BA-AFDA-96DF10247AF0}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>aximp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Visio">
+      <Guid>{00021A98-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>4</VersionMajor>
+      <VersionMinor>12</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.VisOcx">
+      <Guid>{F1A8DFE4-BC61-48BA-AFDA-96DF10247AF0}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="stdole">
+      <Guid>{00020430-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="PathMaker.bas" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 Client Profile %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Visual.C++.10.0.x64">
+      <Visible>False</Visible>
+      <ProductName>Visual C++ 2010 Runtime Libraries %28x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Visual.C++.10.0.x86">
+      <Visible>False</Visible>
+      <ProductName>Visual C++ 2010 Runtime Libraries %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.4.5">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 4.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <FileAssociation Include=".vui">
+      <Visible>False</Visible>
+      <Description>PathMaker VUI</Description>
+      <Progid>PathMakerVUI</Progid>
+      <DefaultIcon>Resources\PathMaker-Logo.ico</DefaultIcon>
+    </FileAssociation>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,325 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="icn_new" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_new.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_import" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_import.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_sendbackward" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_sendbackward.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SaveAsPrompt" xml:space="preserve">
+    <value>Save changes to this drawing?</value>
+  </data>
+  <data name="icn_corner_radius" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_corner_radius.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_generate_xml" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_generate_xml.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_glue_tool" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_glue_tool.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="HLDTemplateFileName" xml:space="preserve">
+    <value>HLDTemplate.dot</value>
+  </data>
+  <data name="OpenUISpecTitle" xml:space="preserve">
+    <value>Import Vui Document Changes</value>
+  </data>
+  <data name="icn_print" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_print.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SaveHLDSpecTitle" xml:space="preserve">
+    <value>Save High Level Design</value>
+  </data>
+  <data name="SaveDialogFilter" xml:space="preserve">
+    <value>Voice User Interface (*.vui)|*.vui</value>
+  </data>
+  <data name="icn_shapes_window" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_shapes_window.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_color_palette" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_color_palette.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="OpenLogoDialogTitle" xml:space="preserve">
+    <value>Open Logo</value>
+  </data>
+  <data name="icn_copy" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_copy.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SaveUISpecTitle" xml:space="preserve">
+    <value>Save UI Specification</value>
+  </data>
+  <data name="icn_paste" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_paste.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SavePromptsFilter" xml:space="preserve">
+    <value>Excel workbook (*.xlsx)|*.xlsx</value>
+  </data>
+  <data name="OpenDialogTitle" xml:space="preserve">
+    <value>Open VUI</value>
+  </data>
+  <data name="OpenLogoDialogFilter" xml:space="preserve">
+    <value>Picture (*.bmp; *.gif; *.jpg; *.png)|*.bmp;*.gif;*.jpg;*.png</value>
+  </data>
+  <data name="icn_align_shapes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_align_shapes.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_snap_glue" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_snap_glue.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_save" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_save.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_repeat" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_repeat.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_center_drawing" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_center_drawing.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="OpenUISpecFilter" xml:space="preserve">
+    <value>Vui Document Changes (*.docx)|*.docx</value>
+  </data>
+  <data name="PathMakerSchemaVersion" xml:space="preserve">
+    <value>6</value>
+  </data>
+  <data name="SaveFastPathXMLTitle" xml:space="preserve">
+    <value>Export FastPath XML</value>
+  </data>
+  <data name="icn_find" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_find.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_export" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_export.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_undo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_undo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PromptRecordingLocation" xml:space="preserve">
+    <value>C:\PromptsToReview\</value>
+  </data>
+  <data name="icn_distributeshapes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_distributeshapes.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PathMakerLogo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PathMaker-Logo.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_dialog_state_count" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_dialog_state_count.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="OpenDialogFilter" xml:space="preserve">
+    <value>Voice User Interface (*.vui)|*.vui|All Files (*.*)|*.*</value>
+  </data>
+  <data name="SavePrompt" xml:space="preserve">
+    <value>Save changes to:</value>
+  </data>
+  <data name="icn_autocorrect" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_autocorrect.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_shadow" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_shadow.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SaveHLDSpecFilter" xml:space="preserve">
+    <value>HLD Specification (*.docx)|*.docx</value>
+  </data>
+  <data name="icn_line" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_line.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_new_page" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_new_page.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="OpenPromptsFilter" xml:space="preserve">
+    <value>Excel workbook (*.xlsx)|*.xlsx</value>
+  </data>
+  <data name="icn_spelling" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_spelling.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SaveFastPathXMLFilter" xml:space="preserve">
+    <value>FastPath XML (*.xml)|*.xml</value>
+  </data>
+  <data name="icn_checkbox" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_checkbox.ico;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_size_position" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_size_position.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_bringtofront" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_bringtofront.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_cut" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_cut.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_connectortool" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_connectortool.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_text" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_text.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_fill" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_fill.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SavePromptsTitle" xml:space="preserve">
+    <value>Export Prompts</value>
+  </data>
+  <data name="OpenPromptsTitle" xml:space="preserve">
+    <value>Import Prompts</value>
+  </data>
+  <data name="icn_generate_ui" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_generate_ui.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_sendtoback" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_sendtoback.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_file_open" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_file_open.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SaveDialogTitle" xml:space="preserve">
+    <value>Save VUI</value>
+  </data>
+  <data name="VUITemplateFileName" xml:space="preserve">
+    <value>VUITemplate.dot</value>
+  </data>
+  <data name="icn_stop" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_stop.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_pointer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_pointer.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_file" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_file.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_bringforward" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_bringforward.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="SaveUISpecFilter" xml:space="preserve">
+    <value>VUI Specification (*.docx)|*.docx</value>
+  </data>
+  <data name="icn_connectshapes" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_connectshapes.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="icn_ruler" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\icn_ruler.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="education" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\education.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+</root>
