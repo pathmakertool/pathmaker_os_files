@@ -1,0 +1,33 @@
+From Microsoft Tech Support:  http://support.microsoft.com/kb/829913
+
+ 
+
+Computer and processor
+
+Visio requires a computer that has an Intel Pentium processor with a clock speed of at least 233 megahertz (MHz). We recommend a computer that uses a Pentium III or faster processor. 
+
+Memory
+
+ We recommend that your computer have 128 megabytes (MB) or more of RAM. 
+
+Available hard disk space
+
+Hard disk requirements vary, depending on your configuration. Custom installation choices may require more or less hard disk space. The hard disk requirements for Office Visio Standard 2007, Office Visio Professional 2007, Office Visio Standard 2003, and Office Visio Professional 2003 are listed as follows:  
+
+Visio Standard 2007 requires 1.5 gigabyte (GB) of hard disk space.
+Operating system
+
+You can run Visio on the following operating systems.
+
+Visio 2007
+
+Windows Vista
+Windows Server 2003 Service Pack 1 (SP1) or later versions
+Windows XP Service Pack 2 (SP2) or later versions
+Display
+
+A Super VGA monitor with at least 800x600 resolution is required.
+
+Web browser
+
+Visio requires Microsoft Internet Explorer 5.5 or a later version. 
