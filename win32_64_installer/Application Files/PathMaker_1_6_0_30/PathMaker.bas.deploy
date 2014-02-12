@@ -1,4 +1,4 @@
-Attribute VB_Name = "PathMaker" 
+Attribute VB_Name = "PathMaker"
 Public Sub ExportPathMakerFile()
     GlobalVar.runningMacro = True
 
