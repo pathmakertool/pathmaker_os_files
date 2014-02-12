@@ -7,6 +7,9 @@
 *.application binary
 *.exe binary
 *.htm binary
+*.bas binary
+*.vss binary
+*.vst binary
 
 # Custom for Visual Studio
 *.cs     diff=csharp
