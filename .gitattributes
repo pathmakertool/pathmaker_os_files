@@ -1,5 +1,12 @@
 # Auto detect text files and perform LF normalization
-* text=auto
+* text=input
+
+# Denote all files that are truly binary and should not be modified.
+*.deploy binary
+*.manifest binary
+*.application binary
+*.exe binary
+*.htm binary
 
 # Custom for Visual Studio
 *.cs     diff=csharp
