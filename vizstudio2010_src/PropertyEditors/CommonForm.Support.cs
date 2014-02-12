@@ -422,8 +422,8 @@ namespace PathMaker {
 
                 // it's one row of nothing if there are no commands
                 if (option == null || confirm == null)
-					//return null;//JDK replaced this line to fix bug with setting confirmation prompts for globals on START shape
-					return confirmOptions;
+                    //return null;
+                    return confirmOptions;//JDK fixed bug in Confirmations section for Globals on START shape
 
                 // if confirm is never it shouldn't be in the list of things to confirm
                 if (confirm.Equals(Strings.ConfirmNever))
