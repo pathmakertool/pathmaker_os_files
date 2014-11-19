@@ -10,6 +10,9 @@
 *.bas binary
 *.vss binary
 *.vst binary
+*.jpg binary
+*.png binary
+*.gif binary
 
 # Custom for Visual Studio
 *.cs     diff=csharp
