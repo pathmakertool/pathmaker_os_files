@@ -13,7 +13,7 @@ namespace PathMaker {
     public class Shadow {
         protected Shape shape;
         protected ShapeTypes shapeType;
-
+        
         public Shadow(Shape shape) {
             this.shape = shape;
             this.shapeType = Common.GetShapeType(shape);
@@ -32,6 +32,12 @@ namespace PathMaker {
         // returns the name of this item to be used in a Goto
         virtual public string GetGotoName() {
             return Strings.DisconnectedConnectorTarget;
+        }
+
+        // returns the default setting for confirm type - may get an override in start step
+        virtual public string GetDefaultConfirmMode()
+        {
+            return Strings.DefaultConfirmModeValue;
         }
 
         /**
@@ -139,12 +145,22 @@ namespace PathMaker {
         }
 
         virtual internal void AddPromptsToRecordingList(PromptRecordingList recordingList, DateTime? onOrAfterDate) { }
+        virtual internal void AddPromptsToRecordingListVer(PromptRecordingList recordingList, String onOrAfterVersion) { }
+        virtual internal void AddDesignNotesToList(DesignNotesList designNotesList) { }
         virtual internal void ApplyPromptsFromRecordingList(PromptRecordingList recordingList) { }
 
         virtual internal DateTime GetLastChangeDate() {
-            //Return Dave's birthdate to prevent highlighing if there is no data to compare to
-            return new DateTime(1966, 9, 3);
+            //Return old date to prevent highlighing if there is no data to compare to
+            return new DateTime(1965, 4, 1);
         }
+
+        virtual internal String GetLastChangeVersion()
+        {
+            //Return default to prevent highlighing if there is no data to compare to
+            return Strings.DefaultVersionStamp;
+        }
+
+        
 
         virtual internal bool RemoveGotosThatDontUseConnectors(string uidBeingRemoved) { return false; }
 
@@ -191,6 +207,8 @@ namespace PathMaker {
         public int GetPageNumber() {
             return shape.ContainingPage.Index;
         }
+
+        virtual internal void RedoHiddenDateMarkers() { }
 
         // Event Handlers
         virtual public void OnShapeProperties() { }

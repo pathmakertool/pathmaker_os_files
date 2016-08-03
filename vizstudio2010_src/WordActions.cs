@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using Microsoft.Office.Interop.Word;
+using System.Windows.Forms;
+using System.IO;
+using System.Drawing;
+using System.Text.RegularExpressions;
 
 namespace PathMaker {
     class WordActions {
@@ -15,8 +15,11 @@ namespace PathMaker {
         private static Dictionary<Shadow, string> gotoNameCache = null;
         private static SaveFileDialog saveFileDialog = null;
         private static ChangeLogShadow changeLogShadow = null;
+        private static AppDescShadow appDescShadow = null;
+        private static PrefixListShadow prefixListShadow = null;
         private static Dictionary<string, List<string>> gotoMaxHandlerCache = null;
         private static OpenFileDialog openFileDialog = null;
+        private static Boolean addMSWordMapMarkers = true;
 
         private class ParamCache {
             public DocTitleShadow docTitleShadow = null;
@@ -24,27 +27,33 @@ namespace PathMaker {
             public AxMicrosoft.Office.Interop.VisOcx.AxDrawingControl visioControl;
             public string targetFilename;
             public string currentFileName;
+            public Boolean skipDiagramExport;
 
         }
 
         private class Templates {
-            public static int ChangeLog = 3;
-            public static int GlobalCommands = 13;
-            public static int GlobalPromptTypes = 14;
-            public static int DefaultSettings = 15;
-            public static int GlobalMaxHandler = 16;
-            public static int Decision = 17;
-            public static int Data = 18;
-            public static int Interaction = 19;
-            public static int Play = 20;
-            public static int SubDialog = 21;
-            public static int Start = 22;
+            public static int ChangeLog = 1;//was 3 now 1 for VUI
+            public static int ChangeLogHLD = 1;//new item added for HLD - old template was different - now we can adjust if needed
+            public static int AppDescription = 2;//new table added JDK 8-12-14
+            public static int PrefixList = 5;//New JDK 8-22-14
+            public static int GlobalCommands = 7;//was 13 now 5 updated to 6 JDK 8-12-14
+            public static int GlobalPromptTypes = 8;//was 14 now 6 updated to 7 JDK 8-12-14
+            public static int DefaultSettings = 9;//was 15 now 7 updated to 8 JDK 8-12-14
+            public static int GlobalMaxHandler = 10;//was 16 now 8 updated to 9 JDK 8-12-14
+            public static int Decision = 11;//was 17 now 9 updated to 10 JDK 8-12-14
+            public static int Data = 12;//was 18 now 10 updated to 11 JDK 8-12-14
+            public static int Interaction = 13;//was 19 now 11 updated to 12 JDK 8-12-14
+            public static int Play = 14;//was 20 now 12 updated to 13 JDK 8-12-14
+            public static int SubDialog = 15;//was 21 now 13 updated to 14 JDK 8-12-14
+            public static int Start = 16;//was 22 - now 14 updated to 15 JDK 8-12-14
         }
 
-        internal static void ExportUserInterfaceSpec(AxMicrosoft.Office.Interop.VisOcx.AxDrawingControl visioControl) {
+        internal static void ExportUserInterfaceSpec(AxMicrosoft.Office.Interop.VisOcx.AxDrawingControl visioControl, Boolean skipDiagramExport) {
             ParamCache paramCache = new ParamCache();
 
             paramCache.visioControl = visioControl;
+            paramCache.skipDiagramExport = skipDiagramExport;//JDK recent feature enhancement 
+            
             paramCache.docTitleShadow = PathMaker.LookupDocTitleShadow();
             if (paramCache.docTitleShadow == null) {
                 Common.ErrorMessage("Missing Document Title shape");
@@ -65,8 +74,27 @@ namespace PathMaker {
                 return;
             }
 
+            //Get appDescShadow to get detailed information
+            //using text box GUID for this new field
+            appDescShadow = PathMaker.LookupAppDescShadow();
+            if (appDescShadow == null)
+            {
+                //Common.ErrorMessage("Missing App Description shape");//JDK removed check for compatibility
+                //return;
+            }
+
+            //Get prefixListShadow to get detailed information
+            //using text box GUID for this new field
+            prefixListShadow = PathMaker.LookupPrefixListShadow();
+            if (prefixListShadow == null)
+            {
+                //Common.ErrorMessage("Missing Prefix List shape");//JDK removed check for compatibility
+                //return;
+            }
+
             if (saveFileDialog == null)
                 saveFileDialog = new SaveFileDialog();
+
             saveFileDialog.InitialDirectory = PathMaker.getCurrentFileDirectory(visioControl);
             saveFileDialog.Title = Common.GetResourceString(Strings.SaveUISpecTitleRes);
             saveFileDialog.Filter = Common.GetResourceString(Strings.SaveUISpecFilterRes);
@@ -87,16 +115,16 @@ namespace PathMaker {
 
         private static bool ExportUserInterfaceSpecWorker(Object arg, ProgressBarForm progressBarForm) {
             ParamCache paramCache = arg as ParamCache;
-
+            
             gotoNameCache = new Dictionary<Shadow, string>();
 
             Microsoft.Office.Interop.Word.Application wordApp = new Microsoft.Office.Interop.Word.Application();
-            wordApp.Visible = false;
+            wordApp.Visible = false;//JDK set to true for help in debugging
 
             string templateFilename = System.Windows.Forms.Application.StartupPath + @"\" + Common.GetResourceString(Strings.VUITemplateFileNameRes);
             Document doc = wordApp.Documents.Add(templateFilename);
 
-            doc.BuiltInDocumentProperties["Author"] = "Convergys PathMaker";
+            doc.BuiltInDocumentProperties["Author"] = "PathMaker User";
 
             // output visio
             Selection content = wordApp.Selection;
@@ -104,26 +132,69 @@ namespace PathMaker {
             content.ClearFormatting();
             content.set_Style("Normal");
             content.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
+            
+            //if we skip the export - we need to also remove the HEADING for "Call Flow Diagrams"
+            if (paramCache.skipDiagramExport) 
+            {
+                //JDK 08-20-2015 added for killing section label
+                content.Text = "\r\nThis section has been intentionally skipped.\r\n\r\n";
+            }
 
-            foreach (Microsoft.Office.Interop.Visio.Page page in paramCache.visioControl.Document.Pages) {
-                if (!page.Name.StartsWith("Background-") &&
-                    !page.Name.Equals("Title") &&
-                    !page.Name.Equals("Revision History")) {
-                    string tmpFileName = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ".jpg";
-                    page.Export(tmpFileName);
-                    content.InlineShapes.AddPicture(tmpFileName);
-                    content.InsertBreak(WdBreakType.wdPageBreak);
+            //new option added to allow skipping the export of all Visio diagram files into the Word Doc
+            if (!paramCache.skipDiagramExport)
+            {
+                InlineShape shp = null;
+
+                foreach (Microsoft.Office.Interop.Visio.Page page in paramCache.visioControl.Document.Pages)
+                {
+                    if (!page.Name.StartsWith("Background-") &&
+                        !page.Name.Equals("Title") &&
+                        !page.Name.Equals("App Description") &&
+                        !page.Name.Equals("Revision History"))
+                    {
+                        string tmpFileName = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ".jpg";
+                        page.Export(tmpFileName);
+                        shp = content.InlineShapes.AddPicture(tmpFileName);
+                        //shp.LockAspectRatio = msoTrue;
+                        shp.ScaleHeight = 90;//set to 90% to handle minor differences
+                        content.InsertBreak(WdBreakType.wdPageBreak);
+                    }
                 }
             }
+
+            List<Shadow> shadowList = PathMaker.LookupAllShadows();
 
             // just show we're moving a little earlier
             progressBarForm.SetProgressPercentage(1, 100); 
 
             AddTitleAndLogo(doc, paramCache.docTitleShadow);
-            AddChangeLog(doc, changeLogShadow);
+            AddChangeLog(doc, changeLogShadow, "VUI");
+            
+            //need to check if the appDesc and prefixList shadows exist before calling these functions - old designs may not include them
+            if (shadowList.Contains(appDescShadow))
+            {
+                AddAppDescription(doc, appDescShadow, "VUI");//JDK 08-12-2014 added appDescription
+            }
+            else
+            {
+                //need to remove template header and empty table
+                //RemoveAppDescription(doc, "VUI");//JDK 09-12-2014 added appDescription removal
+            }
+
+            
+            if (shadowList.Contains(prefixListShadow))
+            {
+                AddPrefixList(doc, prefixListShadow, "VUI");//JDK 08-22-2014 added prefixList
+            }
+            else
+            {
+                //need to remove template header and empty table
+                //RemovePrefixList(doc, "VUI");//JDK 09-12-2014 added prefixList removal
+            }
+            
             AddStartTables(doc, paramCache.startShadow);
 
-            List<Shadow> shadowList = PathMaker.LookupAllShadows();
+
 
             for (int i = shadowList.Count - 1; i >= 0; i--) {
                 StateShadow tmpShadow = shadowList[i] as StateShadow;
@@ -138,8 +209,10 @@ namespace PathMaker {
                 shadowList.Sort(Common.StateIdShadowSorterAlphaNumerical);
             else if (stateSortOrder.Equals(Strings.StateSortOrderNumericalOnly))
                 shadowList.Sort(Common.StateIdShadowSorterNumericalAlpha);
-            else
+            else if (stateSortOrder.Equals(Strings.StateSortOrderVisioHeuristic))
                 Common.StateIdShadowSorterVisioHeuristic(shadowList, paramCache.visioControl.Document, paramCache.startShadow);
+            else
+                Common.StateIdShadowSorterVisioPageGrouping(shadowList, paramCache.visioControl.Document, paramCache.startShadow);//JDK Added new sort option 12-11-2015
 
             int total = shadowList.Count;
             int progress = 0;
@@ -176,6 +249,21 @@ namespace PathMaker {
                 }
             }
 
+            //if (!shadowList.Contains(appDescShadow))
+            appDescShadow = PathMaker.LookupAppDescShadow();
+            if (appDescShadow == null)
+            {
+                doc.Bookmarks["ApplicationDescriptionCleanup"].Range.Delete();//JDK 10-14-2014 added for empty app desc removal
+            }
+
+            //if (!shadowList.Contains(prefixListShadow))
+            prefixListShadow = PathMaker.LookupPrefixListShadow();
+            if (prefixListShadow == null)
+            {
+                doc.Bookmarks["PrefixListCleanup"].Range.Delete();//JDK 10-14-2014 added for empty prefixList removal
+            }
+
+
             doc.Tables[Templates.GlobalCommands].Delete();
             doc.Tables[Templates.GlobalPromptTypes].Delete();
             doc.Tables[Templates.DefaultSettings].Delete();
@@ -187,6 +275,8 @@ namespace PathMaker {
                 doc.Bookmarks["Speech"].Range.Delete();
 
             doc.Bookmarks["TempPages"].Range.Delete();
+
+
             doc.Fields.Update();
 
             gotoNameCache = null;
@@ -280,8 +370,16 @@ namespace PathMaker {
             content.Move(Unit: WdUnits.wdStory);
         }
 
-        private static void AddChangeLog(Document doc, ChangeLogShadow changeLogShadow) {
-            Microsoft.Office.Interop.Word.Table changeLogTable = doc.Tables[Templates.ChangeLog];
+        private static void AddChangeLog(Document doc, ChangeLogShadow changeLogShadow, String label) {
+            Microsoft.Office.Interop.Word.Table changeLogTable = null;
+            if (label.Contains("VUI"))
+            {
+                changeLogTable = doc.Tables[Templates.ChangeLog];
+            }
+            else
+            {
+                changeLogTable = doc.Tables[Templates.ChangeLogHLD];
+            }
             Table table = changeLogShadow.GetChangeLog();
             InsertWordTableRows(changeLogTable, 2, table.GetNumRows() - 1);
 
@@ -308,6 +406,44 @@ namespace PathMaker {
                 content.TypeText(date.ToString("MMMM dd, yyyy"));
         }
 
+        private static void AddAppDescription(Document doc, AppDescShadow appDescShadow, String label)
+        {
+            Microsoft.Office.Interop.Word.Table appDescTable = null;
+            if (label.Contains("VUI")) 
+            {
+                appDescTable = doc.Tables[Templates.AppDescription];
+                String tableText = appDescShadow.GetDescriptionText();
+               
+               if ((tableText == null) || (tableText == "")) {
+                    tableText = "Please go back to PathMaker and enter a brief description about your application.";
+               }
+               appDescTable.Cell(2, 1).Range.Text = tableText;
+               
+               //Selection content = doc.Application.Selection;
+            }
+        }
+       
+
+        private static void AddPrefixList(Document doc, PrefixListShadow prefixListShadow, String label)
+        {
+            Microsoft.Office.Interop.Word.Table prefixListTable = null;
+            if (label.Contains("VUI"))
+            {
+                prefixListTable = doc.Tables[Templates.PrefixList];
+                Table table = prefixListShadow.GetPrefixListTable();
+                InsertWordTableRows(prefixListTable, 2, table.GetNumRows() - 1);
+
+                int wordRow = 2;
+                for (int row = 0; row < table.GetNumRows(); row++)
+                {
+                    prefixListTable.Cell(wordRow, 1).Range.InsertAfter(table.GetData(row, (int)TableColumns.PrefixList.Prefix));
+                    prefixListTable.Cell(wordRow, 2).Range.InsertAfter(table.GetData(row, (int)TableColumns.PrefixList.Meaning));
+                    wordRow++;
+                }
+            }
+        }
+
+        
         private static WdColorIndex ConvertStringToColorIndex(string color) {
             if (color.Equals(Strings.HighlightColorAqua))
                 return WdColorIndex.wdTurquoise;
@@ -321,6 +457,18 @@ namespace PathMaker {
                 return WdColorIndex.wdPink;
             else if (color.Equals(Strings.HighlightColorYellow))
                 return WdColorIndex.wdYellow;
+            else if (color.Equals(Strings.HighlightColorTeal))
+                return WdColorIndex.wdTeal;
+            else if (color.Equals(Strings.HighlightColorGrey))
+                return WdColorIndex.wdGray25;
+            else if (color.Equals(Strings.HighlightColorViolet))
+                return WdColorIndex.wdViolet;
+            else if (color.Equals(Strings.HighlightColorYellow2))
+                return WdColorIndex.wdDarkYellow;
+            else if (color.Equals(Strings.HighlightColorTurquoise))
+                return WdColorIndex.wdTurquoise;
+            else if (color.Equals(Strings.HighlightColorGrey2))
+                return WdColorIndex.wdGray50;
             else
                 return WdColorIndex.wdNoHighlight;
         }
@@ -344,7 +492,7 @@ namespace PathMaker {
             doc.Tables[Templates.GlobalCommands].Range.Copy();
             content.Paste();
             Table table = startShadow.GetConfirmationPrompts();
-            Microsoft.Office.Interop.Word.Table globalCommandTable = doc.Tables[doc.Tables.Count - 4]; 
+            Microsoft.Office.Interop.Word.Table globalCommandTable = doc.Tables[doc.Tables.Count]; //was doc.Tables.Count - 4
             FillConfirmationPromptTable(globalCommandTable, 5, table);
             table = startShadow.GetCommandTransitions();
             FillCommandTransitionTable(globalCommandTable, 2, table);
@@ -353,29 +501,42 @@ namespace PathMaker {
             doc.Tables[Templates.GlobalPromptTypes].Range.Copy();
             content.Paste();
             table = startShadow.GetPromptTypes();
-            Microsoft.Office.Interop.Word.Table globalPromptTypesTable = doc.Tables[doc.Tables.Count - 3];
+            Microsoft.Office.Interop.Word.Table globalPromptTypesTable = doc.Tables[doc.Tables.Count];//was  doc.Tables.Count - 3
             FillPromptTypesTable(globalPromptTypesTable, 3, table);
 
             content.GoTo(What: WdGoToItem.wdGoToBookmark, Name: "DefaultSettings");
             doc.Tables[Templates.DefaultSettings].Range.Copy();
             content.Paste();
             table = startShadow.GetDefaultSettings();
-            Microsoft.Office.Interop.Word.Table defaultSettingsTable = doc.Tables[doc.Tables.Count - 2];
+            Microsoft.Office.Interop.Word.Table defaultSettingsTable = doc.Tables[doc.Tables.Count];//was  doc.Tables.Count - 2
             FillNameValuePairs(defaultSettingsTable, 2, table);
 
             content.GoTo(What: WdGoToItem.wdGoToBookmark, Name: "MaxHandling");
             doc.Tables[Templates.GlobalMaxHandler].Range.Copy();
             content.Paste();
             table = startShadow.GetMaxHandling();
-            Microsoft.Office.Interop.Word.Table maxHandlingTable = doc.Tables[doc.Tables.Count - 1];
+            Microsoft.Office.Interop.Word.Table maxHandlingTable = doc.Tables[doc.Tables.Count];//was  doc.Tables.Count - 1
             FillMaxHandling(maxHandlingTable, 2, table);
 
-            content.GoTo(What: WdGoToItem.wdGoToBookmark, Name: "DialogStates");
+            content.GoTo(What: WdGoToItem.wdGoToBookmark, Name: "DialogStatesNextLine");
+            Shadow firstShadow = startShadow.GetFirstStateGotoTarget();
+
+            if (addMSWordMapMarkers)
+            {
+                content.Font.Name = "Arial";
+                content.Font.Size = 2;
+                content.Font.Color = WdColor.wdColorWhite;//change this to white late to make it more hidden
+                content.TypeText("Start");
+                content.set_Style(WdBuiltinStyle.wdStyleHeading3);
+                content.TypeParagraph();
+                content = doc.Application.Selection;//re-read all current content 
+            }
+            
             doc.Tables[Templates.Start].Range.Copy();
-            content.Bookmarks.Add("bmApplicationStart");
+            content.Bookmarks.Add("bmStart");
             content.Paste();
             Microsoft.Office.Interop.Word.Table startTable = doc.Tables[doc.Tables.Count];
-            Shadow firstShadow = startShadow.GetFirstStateGotoTarget();
+            
             if (firstShadow != null) {
                 Selection sel = startTable.Cell(3, 1).Application.Selection;
                 sel.InsertAfter(CachedGetGotoName(firstShadow));
@@ -390,11 +551,12 @@ namespace PathMaker {
             }
 
             table = startShadow.GetInitialization();
-            FillNameValuePairs(startTable, 6, table);
+            FillNameValueNotesPairs(startTable, 6, table);
 
             startTable.Range.ParagraphFormat.KeepTogether = -1; // = true 
 
-            SetCellBackgroundColorIfNecessary(startTable.Cell(1, 1), startShadow.GetLastChangeDate());
+            //SetCellBackgroundColorIfNecessary(startTable.Cell(1, 1), startShadow.GetLastChangeDate());
+            SetCellBackgroundColorIfNecessary(startTable.Cell(1, 1), startShadow.GetLastChangeVersion());//JDK added
 
             content.Move(WdUnits.wdStory);
             content.set_Style("Normal");
@@ -402,17 +564,25 @@ namespace PathMaker {
             content.Move(WdUnits.wdStory);
         }
 
-        private static void SetCellBackgroundColorIfNecessary(Cell cell, DateTime dateTime) {
+        /*private static void SetCellBackgroundColorIfNecessary(Cell cell, DateTime dateTime) {
             WdColorIndex index = GetHighlightColorIndex(dateTime);
             if (index != WdColorIndex.wdNoHighlight)
                 cell.Range.Font.Shading.BackgroundPatternColorIndex = index;
-        }
+        }*/
 
-        private static void SetCellBackgroundColorIfNecessary(Cell cell, string dateTime) {
-            WdColorIndex index = GetHighlightColorIndex(dateTime);
+        private static void SetCellBackgroundColorIfNecessary(Cell cell, string version) {
+            WdColorIndex index = GetHighlightColorIndex(version);
             if (index != WdColorIndex.wdNoHighlight)
                 cell.Range.Font.Shading.BackgroundPatternColorIndex = index;
         }
+        
+        /*private static void SetCellBackgroundColorIfNecessary(Cell cell, string dateTime)
+        {
+            WdColorIndex index = GetHighlightColorIndex(dateTime);
+            if (index != WdColorIndex.wdNoHighlight)
+                cell.Range.Font.Shading.BackgroundPatternColorIndex = index;
+        }*/
+
         
         private static void FillMaxHandling(Microsoft.Office.Interop.Word.Table wordTable, int wordTableBeginRow, Table table) {
             InsertWordTableRows(wordTable, wordTableBeginRow, table.GetNumRows() - 1);
@@ -442,14 +612,18 @@ namespace PathMaker {
             }
         }
 
-        private static void FillNameValuePairs(Microsoft.Office.Interop.Word.Table wordTable, int wordTableBeginRow, Table table) {
+        private static void FillNameValueNotesPairs(Microsoft.Office.Interop.Word.Table wordTable, int wordTableBeginRow, Table table)
+        {
             InsertWordTableRows(wordTable, wordTableBeginRow, table.GetNumRows() - 1);
 
-            for (int row = 0; row < table.GetNumRows(); row++) {
+            for (int row = 0; row < table.GetNumRows(); row++)
+            {
                 string name = table.GetData(row, (int)TableColumns.NameValuePairs.Name);
                 string value = table.GetData(row, (int)TableColumns.NameValuePairs.Value);
+                string notes = table.GetData(row, (int)TableColumns.NameValuePairs.Notes);
                 string nameDate = table.GetData(row, (int)TableColumns.NameValuePairs.NameDateStamp);
                 string valueDate = table.GetData(row, (int)TableColumns.NameValuePairs.ValueDateStamp);
+                string notesDate = table.GetData(row, (int)TableColumns.NameValuePairs.NotesDateStamp);
 
                 Cell cell = wordTable.Cell(wordTableBeginRow + row, 1);
                 cell.Range.InsertAfter(name);
@@ -458,6 +632,35 @@ namespace PathMaker {
                 cell = wordTable.Cell(wordTableBeginRow + row, 2);
                 cell.Range.InsertAfter(value);
                 SetCellBackgroundColorIfNecessary(cell, valueDate);
+
+                cell = wordTable.Cell(wordTableBeginRow + row, 3);
+                cell.Range.InsertAfter(notes);
+                SetCellBackgroundColorIfNecessary(cell, notesDate);
+            }
+        }
+
+        private static void FillNameValuePairs(Microsoft.Office.Interop.Word.Table wordTable, int wordTableBeginRow, Table table) {
+            InsertWordTableRows(wordTable, wordTableBeginRow, table.GetNumRows() - 1);
+
+            for (int row = 0; row < table.GetNumRows(); row++) {
+                string name = table.GetData(row, (int)TableColumns.NameValuePairs.Name);
+                string value = table.GetData(row, (int)TableColumns.NameValuePairs.Value);
+                //string notes = table.GetData(row, (int)TableColumns.NameValuePairs.Notes);
+                string nameDate = table.GetData(row, (int)TableColumns.NameValuePairs.NameDateStamp);
+                string valueDate = table.GetData(row, (int)TableColumns.NameValuePairs.ValueDateStamp);
+                //string notesDate = table.GetData(row, (int)TableColumns.NameValuePairs.NotesDateStamp);
+
+                Cell cell = wordTable.Cell(wordTableBeginRow + row, 1);
+                cell.Range.InsertAfter(name);
+                SetCellBackgroundColorIfNecessary(cell, nameDate);
+
+                cell = wordTable.Cell(wordTableBeginRow + row, 2);
+                cell.Range.InsertAfter(value);
+                SetCellBackgroundColorIfNecessary(cell, valueDate);
+
+                //cell = wordTable.Cell(wordTableBeginRow + row, 3);
+                //cell.Range.InsertAfter(notes);
+                //SetCellBackgroundColorIfNecessary(cell, notesDate);
             }
         }
 
@@ -755,13 +958,28 @@ namespace PathMaker {
             return false;
         }
 
-        public static WdColorIndex GetHighlightColorIndex(string dateString) {
+
+        public static WdColorIndex GetHighlightColorIndex(string versionStamp) {
+            if (changeLogShadow == null)
+                return WdColorIndex.wdNoHighlight;
+
+            if (versionStamp.Contains("=") || versionStamp.Contains("-") || versionStamp.Contains("+") || versionStamp.Contains("_") || versionStamp.Contains("~") || versionStamp.Contains("@") || versionStamp.Contains("!") || versionStamp.Contains("^") || versionStamp.Contains("%"))
+            {
+                versionStamp = Common.CleanupVersionLabel(versionStamp);        
+            }
+            string color = changeLogShadow.GetColorStringForChange(versionStamp);
+
+            return ConvertStringToColorIndex(color);
+        }
+        
+        /*public static WdColorIndex GetHighlightColorIndex(string dateString)
+        {
             DateTime date;
             if (DateTime.TryParse(dateString, out date))
                 return GetHighlightColorIndex(date);
             else
                 return WdColorIndex.wdNoHighlight;
-        }
+        }*/
 
         public static WdColorIndex GetHighlightColorIndex(DateTime date) {
             if (changeLogShadow == null)
@@ -779,8 +997,20 @@ namespace PathMaker {
                 return input.Substring(0, count);
         }
 
+
         private static void AddInteractionTable(Document doc, InteractionShadow interactionShadow) {
             Selection content = doc.Application.Selection;
+
+            if (addMSWordMapMarkers)
+            {
+                content.Font.Name = "Arial";
+                content.Font.Size = 2;
+                content.Font.Color = WdColor.wdColorWhite;//change this to white late to make it more hidden
+                content.TypeText(interactionShadow.GetStateId());
+                content.set_Style(WdBuiltinStyle.wdStyleHeading3);
+                content.TypeParagraph();
+                content = doc.Application.Selection;//re-read all current content 
+            }
 
             doc.Tables[Templates.Interaction].Range.Copy();
             content.Bookmarks.Add("bm" + Left(AlphaNumericCharsOnly(interactionShadow.GetStateId()), 38));
@@ -832,7 +1062,8 @@ namespace PathMaker {
             table = interactionShadow.GetPromptTypes();
             FillPromptTypesTable(wordTable, 6, table);
 
-            SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), interactionShadow.GetLastChangeDate());
+            //SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), interactionShadow.GetLastChangeDate());
+            SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), interactionShadow.GetLastChangeVersion());//JDK
 
             content.Move(WdUnits.wdStory);
             content.set_Style("Normal");
@@ -879,6 +1110,17 @@ namespace PathMaker {
         private static void AddPlayTable(Document doc, PlayShadow playShadow) {
             Selection content = doc.Application.Selection;
 
+            if (addMSWordMapMarkers)
+            {
+                content.Font.Name = "Arial";
+                content.Font.Size = 2;
+                content.Font.Color = WdColor.wdColorWhite;//change this to white late to make it more hidden
+                content.TypeText(playShadow.GetStateId());
+                content.set_Style(WdBuiltinStyle.wdStyleHeading3);
+                content.TypeParagraph();
+                content = doc.Application.Selection;//re-read all current content 
+            }
+
             doc.Tables[Templates.Play].Range.Copy();
             content.Bookmarks.Add("bm" + Left(AlphaNumericCharsOnly(playShadow.GetStateId()), 38));
             content.Move(WdUnits.wdStory);
@@ -913,7 +1155,8 @@ namespace PathMaker {
             table = playShadow.GetPrompts();
             FillPromptTable(wordTable, 6, table);
 
-            SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), playShadow.GetLastChangeDate());
+            //SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), playShadow.GetLastChangeDate());
+            SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), playShadow.GetLastChangeVersion());//JDK added
 
             content.Move(WdUnits.wdStory);
             content.set_Style("Normal");
@@ -996,6 +1239,17 @@ namespace PathMaker {
         private static void AddDecisionTable(Document doc, DecisionShadow decisionShadow) {
             Selection content = doc.Application.Selection;
 
+            if (addMSWordMapMarkers)
+            {
+                content.Font.Name = "Arial";
+                content.Font.Size = 2;
+                content.Font.Color = WdColor.wdColorWhite;//change this to white late to make it more hidden
+                content.TypeText(decisionShadow.GetStateId());
+                content.set_Style(WdBuiltinStyle.wdStyleHeading3);
+                content.TypeParagraph();
+                content = doc.Application.Selection;//re-read all current content 
+            }
+
             doc.Tables[Templates.Decision].Range.Copy();
             content.Bookmarks.Add("bm" + Left(AlphaNumericCharsOnly(decisionShadow.GetStateId()), 38));
             content.Move(WdUnits.wdStory);
@@ -1019,7 +1273,8 @@ namespace PathMaker {
             table = decisionShadow.GetTransitions();
             FillTransitionTable(wordTable, 5, table);
 
-            SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), decisionShadow.GetLastChangeDate());
+            //SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), decisionShadow.GetLastChangeDate());
+            SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), decisionShadow.GetLastChangeVersion());//JDK added
 
             content.Move(WdUnits.wdStory);
             content.set_Style("Normal");
@@ -1029,6 +1284,18 @@ namespace PathMaker {
 
         private static void AddDataTable(Document doc, DataShadow dataShadow) {
             Selection content = doc.Application.Selection;
+
+            if (addMSWordMapMarkers)
+            {
+                content.Font.Name = "Arial";
+                content.Font.Size = 2;
+                content.Font.Color = WdColor.wdColorWhite;//change this to white late to make it more hidden
+                content.TypeText(dataShadow.GetStateId());
+                content.set_Style(WdBuiltinStyle.wdStyleHeading3);
+                content.TypeParagraph();
+                content = doc.Application.Selection;//re-read all current content 
+            }
+
 
             doc.Tables[Templates.Data].Range.Copy();
             content.Bookmarks.Add("bm" + Left(AlphaNumericCharsOnly(dataShadow.GetStateId()), 38));
@@ -1053,7 +1320,8 @@ namespace PathMaker {
             table = dataShadow.GetTransitions();
             FillTransitionTable(wordTable, 5, table);
 
-            SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), dataShadow.GetLastChangeDate());
+            //SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), dataShadow.GetLastChangeDate());
+            SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), dataShadow.GetLastChangeVersion());//JDK added
 
             content.Move(WdUnits.wdStory);
             content.set_Style("Normal");
@@ -1120,7 +1388,8 @@ namespace PathMaker {
                 cell.Range.Paste();
             }
 
-            SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), subDialogShadow.GetLastChangeDate());
+            //SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), subDialogShadow.GetLastChangeDate());
+            SetCellBackgroundColorIfNecessary(wordTable.Cell(1, 1), subDialogShadow.GetLastChangeVersion());//JDK added
 
             content.Move(WdUnits.wdStory);
             content.set_Style("Normal");
@@ -1158,7 +1427,7 @@ namespace PathMaker {
             
             targetFilename = visioControl.Src;
             currentFileName = System.IO.Path.GetFileName(targetFilename);
-            saveFileDialog.FileName = Common.StripExtensionFileName(currentFileName) + "_hld.docx";
+            saveFileDialog.FileName = Common.StripExtensionFileName(currentFileName) + "_HLD.docx";
   
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 targetFilename = saveFileDialog.FileName;
@@ -1182,13 +1451,17 @@ namespace PathMaker {
             content.set_Style("Normal");
             content.ParagraphFormat.Alignment = WdParagraphAlignment.wdAlignParagraphCenter;
 
+            InlineShape shp = null;
+
             foreach (Microsoft.Office.Interop.Visio.Page page in visioControl.Document.Pages) {
                 if (!page.Name.StartsWith("Background-") &&
                     !page.Name.Equals("Title") &&
+                    !page.Name.Equals("App Description") &&
                     !page.Name.Equals("Revision History")) {
                     string tmpFileName = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ".jpg";
                     page.Export(tmpFileName);
-                    content.InlineShapes.AddPicture(tmpFileName);
+                    shp = content.InlineShapes.AddPicture(tmpFileName);
+                    shp.ScaleHeight = 90;//set to 90% to handle minor differences
                     content.InsertBreak(WdBreakType.wdPageBreak);
                 }
             }
@@ -1196,7 +1469,7 @@ namespace PathMaker {
             visioControl.Document.Saved = saved;
 
             AddTitleAndLogo(doc, docTitleShadow);
-            AddChangeLog(doc, changeLogShadow);
+            AddChangeLog(doc, changeLogShadow, "HLD");
 
             doc.Fields.Update();
 
@@ -1210,6 +1483,8 @@ namespace PathMaker {
         {
             ParamCache paramCache = new ParamCache();
             paramCache.visioControl = visioControlIn;
+
+            Common.WarningMessage("WARNING:  Importing VUI Spec changes requires the 'Track Changes Option' is set ON in your MS Word Dcoument.");
 
             ProgressBarForm progressBarForm = new ProgressBarForm("Import User Interface Spec Changes", ImportUserInterfaceSpecWorker, paramCache);
             progressBarForm.ShowDialog();
@@ -1231,6 +1506,8 @@ namespace PathMaker {
             object saveChanges = Microsoft.Office.Interop.Word.WdSaveOptions.wdDoNotSaveChanges;
             object originalFormat = Type.Missing;
             object routeDocument = Type.Missing;
+
+            Dictionary<string, string> promptIdToStateNameMap = new Dictionary<string, string>();
 
             Microsoft.Office.Interop.Word.Application wordApp = new Microsoft.Office.Interop.Word.Application();
 
@@ -1268,7 +1545,7 @@ namespace PathMaker {
                     total = doc.Revisions.Count;
 
                     //turn off show changes, otherwise it be included in revised text
-                    doc.ActiveWindow.View.ShowInsertionsAndDeletions = false;
+                    //doc.ActiveWindow.View.ShowInsertionsAndDeletions = false;
                     notProcessedList.Clear();
                     PromptChangesList recordingList = new PromptChangesList();
 
@@ -1282,19 +1559,33 @@ namespace PathMaker {
                             {
 
                                 x = arev.Range.Rows;
-                                notFoundText = Regex.Replace((STATE + arev.Range.Tables[1].Cell(1, 1).Range.Text + "\n" + x.First.Range.Text), fieldSeparator, " ").Trim() + "\r\n\n";
-
+                                notFoundText = Regex.Replace((STATE + arev.Range.Tables[1].Cell(1, 1).Range.Text + "\n\t" + x.First.Range.Text), fieldSeparator, " ").Trim() + "\r\n\n";
+                                string tempStateName = arev.Range.Tables[1].Cell(1, 1).Range.Text.Replace("\r\a", string.Empty).Trim();//JDK added to help with unprocessed edits processing
+                                                                
                                 //TODO Make sure import and export consistant in the cols.
                                 shapeName = arev.Range.Tables[1].Cell(1, 2).Range.Text.Replace("\r\a", string.Empty).Trim(); ;
                                 if (shapeName.Equals(Strings.Interaction))
                                 {
                                     WordingCol = 1;
                                     PromptCol = 2;
+                                    //notFoundText = Regex.Replace((STATE + arev.Range.Tables[1].Cell(1, 1).Range.Text + "\n\t\t\t" + x.First.Range.Text), fieldSeparator, " ").Trim() + "\r\n\n";
                                 }
                                 else if (shapeName.Equals(Strings.PlayPrompt))
                                 {
                                     WordingCol = 0;
                                     PromptCol = 1;
+                                    //notFoundText = Regex.Replace((STATE + arev.Range.Tables[1].Cell(1, 1).Range.Text + "\n\t\t\t" + x.First.Range.Text), fieldSeparator, " ").Trim() + "\r\n\n";
+                                }
+                                else if (shapeName.Equals("Version"))
+                                {
+                                    WordingCol = 0;
+                                    PromptCol = 0;
+                                    if (notFoundText.Trim().Length >= 18)
+                                    {
+                                        notFoundText = Regex.Replace((STATE + "Revision History \n\t" + x.First.Range.Text), fieldSeparator, " ").Trim() + "\r\n\n";
+                                        notProcessedList.Add(notFoundText);
+                                    }
+                                    continue;
                                 }
                                 else
                                 {
@@ -1304,15 +1595,18 @@ namespace PathMaker {
                                     continue;
                                 }
 
-                                string[] lines = Regex.Split(x.First.Range.Text, "\r\a");
+                               string[] lines = Regex.Split(x.First.Range.Text, "\r\a");
 
                                 if (lines[WordingCol] != "" && lines[PromptCol] != "")
                                 {
                                     recordingList.AddPromptRecording(lines[PromptCol], lines[WordingCol]);
+                                    promptIdToStateNameMap.Add(lines[PromptCol].Trim(), tempStateName);
                                 }
                                 else
+                                {
                                     if (!notProcessedList.Contains(notFoundText))
                                         notProcessedList.Add(notFoundText);
+                                }
                             }
                             else
                             {
@@ -1336,6 +1630,7 @@ namespace PathMaker {
                         }
                     }
 
+
                     Common.ApplyPromptRecordingList(recordingList);
 
                     //Process not process records to display
@@ -1348,9 +1643,27 @@ namespace PathMaker {
                     Dictionary<string, string> unprocessChangeList = recordingList.getUnusedPromptChanges();
                     if (unprocessChangeList.Count > 0)
                     {
+                        
+                        //JDK - use this to get more context to display - tempStateName
+
                         foreach (KeyValuePair<string, string> pair in unprocessChangeList)
                         {
-                            unprocessed += pair.Value + " " + pair.Key + "\r\n\n";
+                            if (promptIdToStateNameMap.ContainsKey(pair.Key))
+                            {
+                                //grab tempStateName out of dictionary for the "id" 
+                                string tempStateName = "";
+                                if (promptIdToStateNameMap.TryGetValue(pair.Key, out tempStateName))
+                                {
+                                    unprocessed += STATE + tempStateName + " \n\t\t" + pair.Value + " " + pair.Key + "\r\n\n";
+                                }
+                                else {
+                                    unprocessed += STATE + "UNKOWN STATE NAME \n\t\t" + pair.Value + " " + pair.Key + "\r\n\n";
+                                }
+                            }
+                            else
+                            {
+                                unprocessed += pair.Value + " " + pair.Key + "\r\n\n";
+                            }
                         }
                     }
 

@@ -14,7 +14,8 @@ namespace PathMaker {
                                                            Strings.DefaultSettingsRetriesInTotalErrors,
                                                            Strings.DefaultSettingsTimeoutsInTotalErrors,
                                                            Strings.DefaultSettingsDisconfirmsInTotalErrors,
-                                                           Strings.DefaultSettingsStateSortOrder
+                                                           Strings.DefaultSettingsStateSortOrder,
+                                                           Strings.DefaultSettingsConfirmMode,
                                                        };
         public static string[] DefaultSettingsValues = {
                                                            Strings.ModeSpeech,
@@ -23,12 +24,21 @@ namespace PathMaker {
                                                            Strings.ValueYes,
                                                            Strings.ValueYes,
                                                            Strings.ValueYes,
-                                                           Strings.StateSortOrderAlphaNumerical
+                                                           Strings.StateSortOrderAlphaNumerical,
+                                                           Strings.DefaultConfirmModeValue,
                                                        };
-
+        
         public StartShadow(Shape shape)
             : base(shape) {
         }
+
+        
+        public string GetDefaultConfirmMode() {
+            string myString = PathMaker.LookupStartShadow().GetDefaultSetting(Strings.DefaultSettingsConfirmMode);
+            //string tempDefaultConfirmValue = myShadow.GetDefaultSetting(Strings.DefaultSettingsConfirmMode);
+            return myString;
+        }
+
 
         override public void OnShapeProperties() {
             OnShapeDoubleClick();
@@ -56,6 +66,7 @@ namespace PathMaker {
             Common.SetCellTable(shape, ShapeProperties.Start.PromptTypes, table);
         }
 
+        
         internal void SetInitialization(Table table) {
             Common.SetCellTable(shape, ShapeProperties.Start.Initialization, table);
         }
@@ -71,13 +82,18 @@ namespace PathMaker {
                 for (int row = 0; row < DefaultSettingsLabels.Length; row++) {
                     table.SetData(row, (int)TableColumns.NameValuePairs.Name, DefaultSettingsLabels[row]);
                     table.SetData(row, (int)TableColumns.NameValuePairs.Value, DefaultSettingsValues[row]);
+                    table.SetData(row, (int)TableColumns.NameValuePairs.Notes, DefaultSettingsValues[row]);
+
+                    table.SetData(row, (int)TableColumns.NameValuePairs.NameDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());
+                    table.SetData(row, (int)TableColumns.NameValuePairs.ValueDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());
+                    table.SetData(row, (int)TableColumns.NameValuePairs.NotesDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());
                 }
             }
             return table;
         }
 
         /**
-         * Returns the Default Setting associated with the name passed in
+         * Returns the Default Setting associated with the name passed in - JDK 
          */
         internal string GetDefaultSetting(string setting) {
             Table table = GetDefaultSettings();
@@ -101,7 +117,7 @@ namespace PathMaker {
         }
 
         internal override DateTime GetLastChangeDate() {
-            DateTime date = new DateTime(1966, 9, 3);
+            DateTime date = new DateTime(1965, 4, 1);
 
             Table table = GetPromptTypes();
             date = Common.MaxDateWithDateColumn(date, table, (int)TableColumns.PromptTypes.ConditionDateStamp);
@@ -131,6 +147,7 @@ namespace PathMaker {
             table = GetInitialization();
             date = Common.MaxDateWithDateColumn(date, table, (int)TableColumns.NameValuePairs.NameDateStamp);
             date = Common.MaxDateWithDateColumn(date, table, (int)TableColumns.NameValuePairs.ValueDateStamp);
+            date = Common.MaxDateWithDateColumn(date, table, (int)TableColumns.NameValuePairs.NotesDateStamp);
 
             table = GetMaxHandling();
             date = Common.MaxDateWithDateColumn(date, table, (int)TableColumns.MaxHandling.ActionDateStamp);
@@ -138,6 +155,55 @@ namespace PathMaker {
             date = Common.MaxDateWithDateColumn(date, table, (int)TableColumns.MaxHandling.GotoDateStamp);
 
             return date;
+        }
+
+        //JDK added this to switch code to version stamp for highlighting
+        internal override String GetLastChangeVersion()
+        {
+            String versionStamp = Strings.DefaultVersionStamp;//JDK was base.GetLastChangeVersion() - just setting a default string
+
+            Table table = GetPromptTypes();
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.PromptTypes.ConditionDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.PromptTypes.IdDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.PromptTypes.TypeDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.PromptTypes.WordingDateStamp);
+            SetPromptTypes(table);//incase any updates were made
+
+            table = GetCommandTransitions();
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.CommandTransitions.ActionDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.CommandTransitions.ConditionDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.CommandTransitions.ConfirmDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.CommandTransitions.DTMFDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.CommandTransitions.GotoDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.CommandTransitions.OptionDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.CommandTransitions.VocabDateStamp);
+            SetCommandTransitions(table);//incase any updates were made
+
+            table = GetConfirmationPrompts();
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.ConfirmationPrompts.ConditionDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.ConfirmationPrompts.IdDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.ConfirmationPrompts.OptionDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.ConfirmationPrompts.WordingDateStamp);
+            SetConfirmationPrompts(table);//incase any updates were made
+
+            table = GetDefaultSettings();
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.NameValuePairs.NameDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.NameValuePairs.ValueDateStamp);
+            SetDefaultSettings(table);//incase any updates were made
+
+            table = GetInitialization();
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.NameValuePairs.NameDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.NameValuePairs.ValueDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.NameValuePairs.NotesDateStamp);
+            SetInitialization(table);//incase any updates were made
+
+            table = GetMaxHandling();
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.MaxHandling.ActionDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.MaxHandling.CountDateStamp);
+            versionStamp = Common.MaxVersionWithDateColumn(versionStamp, table, (int)TableColumns.MaxHandling.GotoDateStamp);
+            SetMaxHandling(table);//incase any updates were made
+
+            return versionStamp;
         }
 
         public override string GetGotoName() {
@@ -186,7 +252,10 @@ namespace PathMaker {
                 string newWording = recordingList.getWording(id);
                 if (newWording != null && newWording != wording) {
                     table.SetData(r, (int)TableColumns.PromptTypes.Wording, newWording);
-                    table.SetData(r, (int)TableColumns.PromptTypes.WordingDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                    //table.SetData(r, (int)TableColumns.PromptTypes.WordingDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                    table.SetData(r, (int)TableColumns.PromptTypes.WordingDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());//JDK added
+                    table.SetData(r, (int)TableColumns.PromptTypes.IdDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());//JDK added
+                    
                     didOne = true;
                 }
             }
@@ -202,13 +271,99 @@ namespace PathMaker {
                 string newWording = recordingList.getWording(id);
                 if (newWording != null && newWording != wording) {
                     table.SetData(r, (int)TableColumns.ConfirmationPrompts.Wording, newWording);
-                    table.SetData(r, (int)TableColumns.ConfirmationPrompts.WordingDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                    //table.SetData(r, (int)TableColumns.ConfirmationPrompts.WordingDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                    table.SetData(r, (int)TableColumns.ConfirmationPrompts.WordingDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());//JDK added
+                    
                     didOne = true;
                 }
             }
             if (didOne)
                 SetConfirmationPrompts(table);
         }
+
+        internal override void AddPromptsToRecordingListVer(PromptRecordingList recordingList, String onOrAfterVersion)
+        {
+            Table table = GetPromptTypes();
+            //double number;
+
+            for (int r = 0; r < table.GetNumRows(); r++)
+            {
+                string wording = table.GetData(r, (int)TableColumns.PromptTypes.Wording);
+                string id = table.GetData(r, (int)TableColumns.PromptTypes.Id);
+                string wordingDateString = table.GetData(r, (int)TableColumns.PromptTypes.WordingDateStamp);
+                string idDateString = table.GetData(r, (int)TableColumns.PromptTypes.IdDateStamp);
+                
+                if (wordingDateString.Contains("/"))
+                {
+                    DateTime tempDTStamp;
+                    if (DateTime.TryParse(onOrAfterVersion, out tempDTStamp))
+                    {
+                        string tempVersionStampFix = PathMaker.LookupChangeLogShadow().GetVersionStringForChange(tempDTStamp);
+                        wordingDateString = tempVersionStampFix;
+                    }
+                }
+
+                if (idDateString.Contains("/"))
+                {
+                    DateTime tempDTStamp;
+                    if (DateTime.TryParse(onOrAfterVersion, out tempDTStamp))
+                    {
+                        string tempVersionStampFix = PathMaker.LookupChangeLogShadow().GetVersionStringForChange(tempDTStamp);
+                        idDateString = tempVersionStampFix;
+                    }
+                }
+
+                if (onOrAfterVersion != null) 
+                {
+                    if (!wordingDateString.Contains("/") && !idDateString.Contains("/"))
+                    {
+                        if (Common.ForcedStringVersionToDouble(wordingDateString) >= Common.ForcedStringVersionToDouble(onOrAfterVersion) ||
+                            Common.ForcedStringVersionToDouble(idDateString) >= Common.ForcedStringVersionToDouble(onOrAfterVersion))
+                        {
+                            if (id != null && id.Length > 0)
+                                recordingList.AddPromptRecording(id, wording);
+                        }
+                    }
+                }
+                else
+                    if (id != null && id.Length > 0)
+                        recordingList.AddPromptRecording(id, wording);
+            }
+
+            table = GetConfirmationPrompts();
+            for (int r = 0; r < table.GetNumRows(); r++)
+            {
+                string wording = table.GetData(r, (int)TableColumns.ConfirmationPrompts.Wording);
+                string id = table.GetData(r, (int)TableColumns.ConfirmationPrompts.Id);
+                string wordingDateString = table.GetData(r, (int)TableColumns.ConfirmationPrompts.WordingDateStamp);
+                string idDateString = table.GetData(r, (int)TableColumns.ConfirmationPrompts.IdDateStamp);
+                if (idDateString == "" && wordingDateString != "")
+                {
+                    idDateString = wordingDateString;
+                }
+                else if (wordingDateString == "" && idDateString != "")
+                {
+                    wordingDateString = idDateString;
+                }
+
+                if (onOrAfterVersion != null)
+                {
+                    if (!wordingDateString.Contains("/") && !idDateString.Contains("/"))
+                    {
+                        if (Common.ForcedStringVersionToDouble(wordingDateString) >= Common.ForcedStringVersionToDouble(onOrAfterVersion) &&
+                            Common.ForcedStringVersionToDouble(idDateString) >= Common.ForcedStringVersionToDouble(onOrAfterVersion))
+                        {
+                            if (id != null && id.Length > 0)
+                                recordingList.AddPromptRecording(id, wording);
+                        }
+                    }
+                }
+                else
+                    if (id != null && id.Length > 0)
+                        recordingList.AddPromptRecording(id, wording);
+            }
+        }
+
 
         internal override void AddPromptsToRecordingList(PromptRecordingList recordingList, DateTime? onOrAfterDate) {
             Table table = GetPromptTypes();
@@ -250,6 +405,130 @@ namespace PathMaker {
             }
         }
 
+        internal override void RedoHiddenDateMarkers()
+        {
+            //use this to force hidden date fields to be version numbers
+            //Common.WarningMessage("START SHAPE:  Starting to loop thru table records");
+            Table table = GetPromptTypes();
+            String lastVersionStamp = Strings.DefaultVersionStamp;
+            String tempVersionStamp = "";
+            Boolean labelsUpdated = false;
+
+            for (int r = 0; r < table.GetNumRows(); r++)
+            {
+                string wordingDateString = table.GetData(r, (int)TableColumns.PromptTypes.WordingDateStamp);
+                string idDateString = table.GetData(r, (int)TableColumns.PromptTypes.IdDateStamp);
+
+
+                if (wordingDateString != "" && wordingDateString.Contains("/"))
+                {
+                    DateTime revisionDate;
+                    if (DateTime.TryParse(wordingDateString, out revisionDate))
+                    {
+                        tempVersionStamp = PathMaker.LookupChangeLogShadow().GetVersionStringForChange(revisionDate);
+                        //Common.WarningMessage("START SHAPE: Wording Date was: " + wordingDateString + " and label update is: " + tempVersionStamp);
+                        table.SetData(r, (int)TableColumns.PromptTypes.WordingDateStamp, tempVersionStamp);
+                        labelsUpdated = true;
+                    }
+                }
+                if (idDateString != "" && idDateString.Contains("/"))
+                {
+                    DateTime revisionDate;
+                    if (DateTime.TryParse(idDateString, out revisionDate))
+                    {
+                        tempVersionStamp = PathMaker.LookupChangeLogShadow().GetVersionStringForChange(revisionDate);
+                        //Common.WarningMessage("START SHAPE: ID Date was: " + idDateString + " and label update is: " + tempVersionStamp);
+                        table.SetData(r, (int)TableColumns.PromptTypes.IdDateStamp, tempVersionStamp);
+                        labelsUpdated = true;
+                    }
+                }
+            }
+            if (labelsUpdated)
+                SetPromptTypes(table);//JDK Uncomment later
+
+            labelsUpdated = false;
+            table = GetConfirmationPrompts();
+            for (int r = 0; r < table.GetNumRows(); r++)
+            {
+                string wordingDateString = table.GetData(r, (int)TableColumns.ConfirmationPrompts.WordingDateStamp);
+                string idDateString = table.GetData(r, (int)TableColumns.ConfirmationPrompts.IdDateStamp);
+
+                if (wordingDateString != "" && wordingDateString.Contains("/"))
+                {
+                    DateTime revisionDate;
+                    if (DateTime.TryParse(wordingDateString, out revisionDate))
+                    {
+                        tempVersionStamp = PathMaker.LookupChangeLogShadow().GetVersionStringForChange(revisionDate);
+                        //Common.WarningMessage("START SHAPE: Conf Wording Date was: " + wordingDateString + " and label update is: " + tempVersionStamp);
+                        table.SetData(r, (int)TableColumns.ConfirmationPrompts.WordingDateStamp, tempVersionStamp);
+                        labelsUpdated = true;
+                    }
+                }
+                if (idDateString != "" && idDateString.Contains("/"))
+                {
+                    DateTime revisionDate;
+                    if (DateTime.TryParse(idDateString, out revisionDate))
+                    {
+                        tempVersionStamp = PathMaker.LookupChangeLogShadow().GetVersionStringForChange(revisionDate);
+                        //Common.WarningMessage("START SHAPE: Conf ID Date was: " + idDateString + " and label update is: " + tempVersionStamp);
+                        table.SetData(r, (int)TableColumns.ConfirmationPrompts.IdDateStamp, tempVersionStamp);
+                        labelsUpdated = true;
+                    }
+                }
+            }
+            //Common.WarningMessage("START SHAPE:  Completed process for this Interaction state");
+            if (labelsUpdated)
+                SetConfirmationPrompts(table);
+
+            labelsUpdated = false;
+            table = GetInitialization();
+            for (int r = 0; r < table.GetNumRows(); r++)
+            {
+                string nameDateString = table.GetData(r, (int)TableColumns.NameValuePairs.NameDateStamp);
+                string notesDateString = table.GetData(r, (int)TableColumns.NameValuePairs.NotesDateStamp);
+                string valueDateString = table.GetData(r, (int)TableColumns.NameValuePairs.ValueDateStamp);
+
+                if (nameDateString != "" && nameDateString.Contains("/"))
+                {
+                    DateTime revisionDate;
+                    if (DateTime.TryParse(nameDateString, out revisionDate))
+                    {
+                        tempVersionStamp = PathMaker.LookupChangeLogShadow().GetVersionStringForChange(revisionDate);
+                        //Common.WarningMessage("START SHAPE: Conf Wording Date was: " + wordingDateString + " and label update is: " + tempVersionStamp);
+                        table.SetData(r, (int)TableColumns.NameValuePairs.NameDateStamp, tempVersionStamp);
+                        labelsUpdated = true;
+                    }
+                }
+                if (notesDateString != "" && notesDateString.Contains("/"))
+                {
+                    DateTime revisionDate;
+                    if (DateTime.TryParse(notesDateString, out revisionDate))
+                    {
+                        tempVersionStamp = PathMaker.LookupChangeLogShadow().GetVersionStringForChange(revisionDate);
+                        //Common.WarningMessage("START SHAPE: Conf ID Date was: " + idDateString + " and label update is: " + tempVersionStamp);
+                        table.SetData(r, (int)TableColumns.NameValuePairs.NotesDateStamp, tempVersionStamp);
+                        labelsUpdated = true;
+                    }
+                }
+                if (valueDateString != "" && valueDateString.Contains("/"))
+                {
+                    DateTime revisionDate;
+                    if (DateTime.TryParse(valueDateString, out revisionDate))
+                    {
+                        tempVersionStamp = PathMaker.LookupChangeLogShadow().GetVersionStringForChange(revisionDate);
+                        //Common.WarningMessage("START SHAPE: Conf ID Date was: " + idDateString + " and label update is: " + tempVersionStamp);
+                        table.SetData(r, (int)TableColumns.NameValuePairs.ValueDateStamp, tempVersionStamp);
+                        labelsUpdated = true;
+                    }
+                }
+            }
+            //Common.WarningMessage("START SHAPE:  Completed process for this Interaction state");
+            if (labelsUpdated)
+                SetInitialization(table);
+
+        }
+
+
         public override void OnConnectAddInput(Shadow shadow) {
             Common.ErrorMessage("Incorrectly adding input to Start");
             // get busy cursor without this
@@ -265,7 +544,9 @@ namespace PathMaker {
                 for (int r = 0; r < table.GetNumRows(); r++)
                     if (table.GetData(r, (int)TableColumns.MaxHandling.Goto).Equals(uidBeingRemoved)) {
                         table.SetData(r, (int)TableColumns.MaxHandling.Goto, Strings.HangUpKeyword);
-                        table.SetData(r, (int)TableColumns.MaxHandling.GotoDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                        //table.SetData(r, (int)TableColumns.MaxHandling.GotoDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                        table.SetData(r, (int)TableColumns.MaxHandling.GotoDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());//JDK added
+                        
                         changed = true;
                     }
 
@@ -279,7 +560,9 @@ namespace PathMaker {
                 for (int r = 0; r < table.GetNumRows(); r++)
                     if (table.GetData(r, (int)TableColumns.CommandTransitions.Goto).Equals(uidBeingRemoved)) {
                         table.SetData(r, (int)TableColumns.CommandTransitions.Goto, Strings.HangUpKeyword);
-                        table.SetData(r, (int)TableColumns.CommandTransitions.GotoDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                        //table.SetData(r, (int)TableColumns.CommandTransitions.GotoDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                        table.SetData(r, (int)TableColumns.CommandTransitions.GotoDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());//JDK added
+                        
                         changed = true;
                     }
 
@@ -289,6 +572,7 @@ namespace PathMaker {
 
             return changed;
         }
+
 
         public override int RedoPromptIds(int startNumber, string promptIdFormat) {
             Table table = GetPromptTypes();

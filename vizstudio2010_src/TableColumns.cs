@@ -8,8 +8,10 @@ namespace PathMaker {
         public enum NameValuePairs {
             Name=0,
             Value=1,
-            NameDateStamp=2,
-            ValueDateStamp=3,
+            Notes=2,
+            NameDateStamp=3,
+            ValueDateStamp=4,
+            NotesDateStamp=5
         }
 
         public enum PromptTypes {
@@ -71,6 +73,11 @@ namespace PathMaker {
             TextDateStamp=1,
         }
 
+        public enum DesignNotes {
+            Text = 0,
+            TextDateStamp = 1,
+        }
+
         public enum Transitions {
             Condition=0,
             Action=1,
@@ -96,5 +103,16 @@ namespace PathMaker {
             Author=3,
             Highlight=4,
         }
+
+        public enum AppDesc {
+            Text = 0,
+            Highlight = 1,
+        }
+
+        public enum PrefixList {
+            Prefix = 0,
+            Meaning = 1,
+        }
+
     }
 }

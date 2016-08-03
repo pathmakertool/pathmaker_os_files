@@ -15,6 +15,7 @@ namespace PathMaker {
         // using it like this will keep last directory around 
         private static SaveFileDialog saveFileDialog = null;
         private static bool exportPromptHyperLinks = false;
+        static System.Windows.Forms.Timer myTimer = new System.Windows.Forms.Timer();
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e) {
             string fileName;
@@ -31,6 +32,7 @@ namespace PathMaker {
                     openFileDialog = new OpenFileDialog();
                     openFileDialog.Title = Common.GetResourceString(Strings.OpenDialogTitleRes);
                     openFileDialog.Filter = Common.GetResourceString(Strings.OpenDialogFilterRes);
+                    //openFileDialog.Multiselect = false;//JDK not currently used
                     openFileDialog.FilterIndex = 1;
                 }
 
@@ -665,7 +667,13 @@ namespace PathMaker {
         }
 
         private void userInterfaceSpecToolStripMenuItem_Click(object sender, EventArgs e) {
-            WordActions.ExportUserInterfaceSpec(visioControl);
+            WordActions.ExportUserInterfaceSpec(visioControl, false);//JDK added 2nd param to set diagram skipping flag
+            FixHourGlassAfterConfusingVisio();
+        }
+
+        private void userInterfaceSpecNoDiagramsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            WordActions.ExportUserInterfaceSpec(visioControl, true);//JDK added 2nd param to set diagram skipping flag
             FixHourGlassAfterConfusingVisio();
         }
 
@@ -685,6 +693,13 @@ namespace PathMaker {
             WordActions.ExportHighLevelDesignDoc(visioControl);
             FixHourGlassAfterConfusingVisio();
         }
+
+        private void designNotesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExcelActions.ExportDesignNotes(visioControl);
+            FixHourGlassAfterConfusingVisio();
+        }
+
 
         private void importPromptListToolStripMenuItem_Click(object sender, EventArgs e) {
             ExcelActions.ImportPromptList(getCurrentFileDirectory());
@@ -761,7 +776,8 @@ namespace PathMaker {
             GC.WaitForPendingFinalizers();
         }
 
-        private void byDateToolStripMenuItem_Click(object sender, EventArgs e) {
+        /* JDK removed on 03-12-15 - using version filters now
+         * private void byDateToolStripMenuItem_Click(object sender, EventArgs e) {
             DateForm dateForm = new DateForm();
 
             if (dateForm.ShowDialog() == DialogResult.OK) {
@@ -773,6 +789,64 @@ namespace PathMaker {
                 GC.WaitForPendingFinalizers();
             }
         }
+         * */
+
+
+        private void byVersionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            versionStampForm versionStampForm = new versionStampForm();
+            String versionMarker = "0.0";
+
+            if (versionStampForm.ShowDialog() == DialogResult.OK)
+            {
+                versionMarker = versionStampForm.versionStamp.Text;
+
+                ExcelActions.ExportPromptListVer(versionMarker, exportPromptHyperLinks, visioControl);
+                // required to make sure excel goes away
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+        }
+
+        /* private void overrideValSrv_Click(object sender, EventArgs e)
+        {
+            ModifyServerIp modifyServerIp = new ModifyServerIp();
+            String tempServerName = Strings.SERVERNAME;
+            String tempIpData = "";
+            myTimer.Stop();
+            modifyServerIp.ShowDialog();
+
+            //Common.WarningMessage("DEBUG:  Result from modifyServerIP dbox = " + modifyServerIp.DialogResult.ToString());
+
+            if (modifyServerIp.DialogResult == DialogResult.OK)
+            {
+                tempIpData = modifyServerIp.ServerIpText.Text;
+                if (tempIpData != PathMaker.GetValidationServerIP() && tempIpData != "")
+                {
+                    //need to update the string used for storing the validation server IP address
+                    tempServerName = "http://" + tempIpData + ":" + Strings.SERVERPORT + Strings.SERVERPATH;
+                    PathMaker.SetValidationServerIP(tempIpData);
+                    PathMaker.SetValidationServer(tempServerName);
+                }
+            }
+            else if (modifyServerIp.DialogResult == DialogResult.Ignore)
+            {
+                modifyServerIp.ServerIpText.Text = Strings.SERVERIP;
+                tempIpData = Strings.SERVERIP;
+                PathMaker.SetValidationServerIP(Strings.SERVERIP);
+                PathMaker.SetValidationServer(Strings.SERVERNAME);
+            }
+            else 
+            {
+                //do nothing right now
+            }
+
+            myTimer.Interval = 500;//adding a small delay to prevent race condition setting IP addess
+            myTimer.Start();
+            ToolStripTextBox myTextBox = (ToolStripTextBox)CurrSrvLabel1;
+            myTextBox.Text = "Server: " + GetValidationServerIP();
+        }
+        */
 
         private void addHyperlinksToolStripMenuItem_Click(object sender, EventArgs e) {
             exportPromptHyperLinks = !exportPromptHyperLinks;
@@ -935,7 +1009,7 @@ namespace PathMaker {
         }
 
         private void fastPathClassroomToolStripMenuItem_Click(object sender, EventArgs e) {
-            System.Diagnostics.Process.Start("http://fastpathserver.intervoice.int:8080/PathRunner/Classroom.jsp");
+            System.Diagnostics.Process.Start(PathMaker.GetValidationServer() + "Classroom.jsp");
         }
     }
 }

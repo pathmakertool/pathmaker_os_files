@@ -17,5 +17,10 @@ namespace PathMaker {
             DialogResult = DialogResult.OK;
             Close();
         }
+
+        private void DateForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

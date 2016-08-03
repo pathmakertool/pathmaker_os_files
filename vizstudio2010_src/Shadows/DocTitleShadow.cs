@@ -10,11 +10,11 @@ namespace PathMaker {
             : base(shape) {
             // apparently there are shapes here which used to display the title information
             // we could delete these in an upgrade (don't forget the vss file) if we want
-            shape.Shapes[1].Text = string.Empty;
-            shape.Shapes[2].Text = string.Empty;
-            shape.Shapes[3].Text = string.Empty;
-            shape.Shapes[4].Text = string.Empty;
-            shape.Shapes[5].Text = string.Empty;
+            //shape.Shapes[1].Text = string.Empty;
+            //shape.Shapes[2].Text = string.Empty;
+            //shape.Shapes[3].Text = string.Empty;
+            //shape.Shapes[4].Text = string.Empty;
+            //shape.Shapes[5].Text = string.Empty;
         }
 
         override public void OnShapeProperties() {

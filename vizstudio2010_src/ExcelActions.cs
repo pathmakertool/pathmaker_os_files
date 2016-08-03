@@ -14,6 +14,160 @@ namespace PathMaker {
         private static OpenFileDialog openFileDialog = null;
         private const char DuplicateIdDelimiter = ',';
 
+        internal static void ExportPromptListVer(String onOrAfterVersion, bool hyperLinks, AxMicrosoft.Office.Interop.VisOcx.AxDrawingControl visioControl)
+        {
+            string targetFilename;
+            string currentFileName;
+
+            if (saveFileDialog == null)
+            {
+                saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Title = Common.GetResourceString(Strings.SavePromptsTitleRes);
+                saveFileDialog.Filter = Common.GetResourceString(Strings.SavePromptsFilterRes);
+                saveFileDialog.FilterIndex = 1;
+
+                // Excel will ask about overwriting and I can't find a way to bypass that - so 
+                // skip it here and let excel do it on wb.close
+                saveFileDialog.OverwritePrompt = false;
+            }
+
+            saveFileDialog.InitialDirectory = PathMaker.getCurrentFileDirectory(visioControl);
+
+            targetFilename = visioControl.Src;
+            currentFileName = System.IO.Path.GetFileName(targetFilename);
+            saveFileDialog.FileName = Common.StripExtensionFileName(currentFileName) + "_Prompts.xlsx";
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                targetFilename = saveFileDialog.FileName;
+            else
+                return;
+
+            Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
+
+            if (excelApp == null)
+            {
+                Common.ErrorMessage("Couldn't start Excel - make sure it's installed");
+                return;
+            }
+            excelApp.Visible = false;
+
+            Workbook wb = excelApp.Workbooks.Add(XlWBATemplate.xlWBATWorksheet);
+            Worksheet ws = (Worksheet)wb.Worksheets[1];
+
+            if (ws == null)
+            {
+                Common.ErrorMessage("Excel worksheet couldn't be created.");
+                return;
+            }
+
+            DocTitleShadow shadow = PathMaker.LookupDocTitleShadow();
+            string client = "";
+            string project = "";
+            if (shadow != null)
+            {
+                client = shadow.GetClientName();
+                project = shadow.GetProjectName();
+            }
+
+            ws.Cells[1, 1].Value = "Client: " + client;
+            ws.Cells[2, 1].Value = "Project: " + project;
+            ws.Cells[3, 1].Value = "Date: " + DateTime.Now.ToString(Strings.DateColumnFormatString);
+            ws.Columns["A:A"].ColumnWidth = 8;
+            ws.Columns["B:C"].ColumnWidth = 30;
+            ws.Columns["D:E"].ColumnWidth = 50;
+
+            ((Range)ws.Columns["C:E"]).EntireColumn.WrapText = true;
+
+            ws.Cells[5, 1].Value = "Count";
+            ws.Cells[5, 2].Value = "Prompt ID";
+            ws.Cells[5, 3].Value = "Duplicate IDs";
+            ws.Cells[5, 4].Value = "Prompt Wording";
+            ws.Cells[5, 5].Value = "Notes";
+
+            ws.Cells[5, 1].Font.Bold = true;
+            ws.Cells[5, 2].Font.Bold = true;
+            ws.Cells[5, 3].Font.Bold = true;
+            ws.Cells[5, 4].Font.Bold = true;
+            ws.Cells[5, 5].Font.Bold = true;
+
+            if (onOrAfterVersion.Contains("/"))
+            {
+                DateTime tempDTStamp;
+                if (DateTime.TryParse(onOrAfterVersion, out tempDTStamp))
+                {
+                    string tempVersionStampFix = PathMaker.LookupChangeLogShadow().GetVersionStringForChange(tempDTStamp);
+                    onOrAfterVersion = tempVersionStampFix;
+                }
+            }
+
+            PromptRecordingList recordingList = Common.GetPromptRecordingListVer(onOrAfterVersion);
+
+            List<string> duplicateIdList = recordingList.GetDuplicatePromptIds();
+            if (duplicateIdList.Count > 0)
+            {
+
+                string list = String.Empty;
+                int lineCounter = 1;
+                foreach (string s in duplicateIdList)
+                {
+                    list += s;
+                    list += ", ";
+                    if (list.Length > (lineCounter * 60))
+                    {
+                        list += "\n";
+                        lineCounter++;
+                    }
+                }
+                list = list.Substring(0, list.Length - 2);
+
+                Common.ErrorMessage("Warning: multiple copies of prompt ids in the design.\n" +
+                                    "Management and testing of each is NOT handled by the tools.\n" +
+                                    "You are responsible for reviewing and testing that each is correct.\n" +
+                                    "Recommended that you fix the prompt numbers and let the tools handle it.\n" +
+                                    "\n" +
+                                    "Duplicates:\n" +
+                                    list);
+            }
+
+            int row = 7;
+            int count = 1;
+            foreach (PromptRecordingList.PromptRecording recording in recordingList.GetPromptRecordings())
+            {
+                ws.Cells[row, 1] = count;
+                ws.Cells[row, 2] = recording.PromptId;
+                ws.Cells[row, 3] = MakeDuplicateString(recording.GetDuplicateIds());
+                string wording = Common.StripBracketLabels(recording.Wording);
+                ws.Cells[row, 4] = wording;
+
+                // if the whole wording is the label, there are no []s
+                string label = Common.MakeLabelName(recording.Wording);
+                if (label.Length != wording.Length)
+                    ws.Cells[row, 5] = Common.MakeLabelName(recording.Wording);
+
+                if (hyperLinks)
+                {
+                    string recordingFile = Common.GetResourceString(Strings.PromptRecordingLocationRes);
+                    recordingFile += "\\" + recording.PromptId + ".wav";
+                    ws.Hyperlinks.Add(ws.Cells[row, 2], recordingFile);
+                }
+
+                row++;
+                count++;
+            }
+
+            try
+            {
+                wb.SaveAs(targetFilename);
+            }
+            catch
+            {
+            }
+            excelApp.Quit(); ;
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+            excelApp = null;
+        }
+
+
         internal static void ExportPromptList(DateTime? onOrAfterDate, bool hyperLinks, AxMicrosoft.Office.Interop.VisOcx.AxDrawingControl visioControl)
         {
             string targetFilename;
@@ -34,7 +188,7 @@ namespace PathMaker {
 
             targetFilename = visioControl.Src;
             currentFileName = System.IO.Path.GetFileName(targetFilename);
-            saveFileDialog.FileName = Common.StripExtensionFileName(currentFileName) + ".xlsx";
+            saveFileDialog.FileName = Common.StripExtensionFileName(currentFileName) + "_Prompts.xlsx";
 
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 targetFilename = saveFileDialog.FileName;
@@ -142,6 +296,138 @@ namespace PathMaker {
             catch {
             }
             excelApp.Quit(); ;
+            System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
+            excelApp = null;
+        }
+
+        internal static void ExportDesignNotes(AxMicrosoft.Office.Interop.VisOcx.AxDrawingControl visioControl)
+        {
+            string targetFilename;
+            string currentFileName;
+
+            if (saveFileDialog == null)
+            {
+                saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Title = Common.GetResourceString(Strings.SavePromptsTitleRes);
+                saveFileDialog.Filter = Common.GetResourceString(Strings.SavePromptsFilterRes);
+                saveFileDialog.FilterIndex = 1;
+
+                // Excel will ask about overwriting and I can't find a way to bypass that - so 
+                // skip it here and let excel do it on wb.close
+                saveFileDialog.OverwritePrompt = false;
+            }
+
+            saveFileDialog.InitialDirectory = PathMaker.getCurrentFileDirectory(visioControl);
+
+            targetFilename = visioControl.Src;
+            currentFileName = System.IO.Path.GetFileName(targetFilename);
+            saveFileDialog.FileName = Common.StripExtensionFileName(currentFileName) + "_DesignNotes.xlsx";
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                targetFilename = saveFileDialog.FileName;
+            else
+                return;
+
+            Microsoft.Office.Interop.Excel.Application excelApp = new Microsoft.Office.Interop.Excel.Application();
+
+            if (excelApp == null)
+            {
+                Common.ErrorMessage("Couldn't start Excel - make sure it's installed");
+                return;
+            }
+            excelApp.Visible = false;
+
+            Workbook wb = excelApp.Workbooks.Add(XlWBATemplate.xlWBATWorksheet);
+            Worksheet ws = (Worksheet)wb.Worksheets[1];
+
+            if (ws == null)
+            {
+                Common.ErrorMessage("Excel worksheet couldn't be created.");
+                return;
+            }
+
+            DocTitleShadow shadow = PathMaker.LookupDocTitleShadow();
+            string client = "";
+            string project = "";
+        
+            if (shadow != null)
+            {
+                client = shadow.GetClientName();
+                project = shadow.GetProjectName();
+            }
+
+            ws.Cells[1, 1].Value = "Client: " + client;
+            ws.Cells[2, 1].Value = "Project: " + project;
+            ws.Cells[3, 1].Value = "Date: " + DateTime.Now.ToString(Strings.DateColumnFormatString);
+
+            ws.Cells[1, 1].Font.Bold = true;
+            ws.Cells[2, 1].Font.Bold = true;
+            ws.Cells[3, 1].Font.Bold = true;
+
+            ws.Columns["A:A"].ColumnWidth = 6;
+            ws.Columns["B:B"].ColumnWidth = 40;
+            ws.Columns["C:C"].ColumnWidth = 100;
+            ws.Columns["D:D"].ColumnWidth = 16;
+
+            ((Range)ws.Columns["C:C"]).EntireColumn.WrapText = true;
+
+            ws.Cells[5, 1].Value = "Count";
+            ws.Cells[5, 2].Value = "State Name";
+            ws.Cells[5, 3].Value = "Design Notes";
+            ws.Cells[5, 4].Value = "Last Updated";
+            
+            ws.Cells[5, 1].Font.Bold = true;
+            ws.Cells[5, 2].Font.Bold = true;
+            ws.Cells[5, 3].Font.Bold = true;
+            ws.Cells[5, 4].Font.Bold = true;
+
+            ws.Cells[5, 4].HorizontalAlignment = XlHAlign.xlHAlignLeft;
+            ws.Columns["D:D"].HorizontalAlignment = XlHAlign.xlHAlignLeft;
+            
+            DesignNotesList designNotesList = Common.GetDesignNotesList();
+
+            char[] delimiterChars = { '@' };
+            //raw text looks like this... "design notes have been updated again@@02/18/2014"
+            //splitting inot two parts for XLS writing 
+            
+                int row = 6;
+                int count = 1;
+                if (designNotesList.GetDesignNotes().Count >= 1)
+                {
+                    foreach (DesignNotesList.DesignNoteContent designNote in designNotesList.GetDesignNotes())
+                    {
+                        ws.Cells[row, 1] = count;
+                        ws.Cells[row, 2] = designNote.StateId;
+
+                        //string wording = Common.StripBracketLabels(designNote.Wording);
+                        string[] notes = Common.StripBracketLabels(designNote.Wording).Split(delimiterChars);
+
+                        if (notes[0].Length > 0)
+                        {
+                            ws.Cells[row, 3] = notes[0];
+                            string lastUpdated = notes[2];
+                            ws.Cells[row, 4] = lastUpdated;
+                            ws.Rows[row].VerticalAlignment = XlVAlign.xlVAlignCenter;
+                            ws.Cells[row, 1].HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                        }
+                        row++;
+                        count++;
+                    }
+
+                    try
+                    {
+                        wb.SaveAs(targetFilename);
+                    }
+                    catch
+                    {
+                        Common.ErrorMessage("Excel worksheet couldn't be created.");
+                    }
+                }
+                else
+                {
+                    Common.ErrorMessage("Excel worksheet generation skipped - no Design Notes found in VUI file.");
+                }
+            excelApp.Quit(); 
             System.Runtime.InteropServices.Marshal.ReleaseComObject(excelApp);
             excelApp = null;
         }

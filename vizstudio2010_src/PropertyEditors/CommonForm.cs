@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.ComponentModel;
 using System.Drawing;
+using PathMaker.PropertyEditors.GridRows;
 
 // When adding a new form, here are the property settings used
 // Name
@@ -28,8 +29,10 @@ namespace PathMaker {
                 gridView.AutoGenerateColumns = false;
                 AddTextBoxColumn(gridView, NameValuePairRow.NameColumnName);
                 AddTextBoxColumn(gridView, NameValuePairRow.ValueColumnName);
+                AddTextBoxColumn(gridView, NameValuePairRow.NotesColumnName);
                 AddTextBoxColumn(gridView, NameValuePairRow.NameDateStampColumnName);
                 AddTextBoxColumn(gridView, NameValuePairRow.ValueDateStampColumnName);
+                AddTextBoxColumn(gridView, NameValuePairRow.NotesDateStampColumnName);
                 ApplyCommonDataGridViewSettings<NameValuePairRow>(gridView, true);
                 HideDateStampColumns(gridView);
             }
@@ -66,6 +69,8 @@ namespace PathMaker {
                 HideDateStampColumns(gridView);
             }
             
+
+
             // Loaded each time because they need to add in user defined ones
             LoadComboBoxColumn(gridView, PromptTypeRow.TypeColumnName, GetPromptTypeComboValues(table, (int)TableColumns.PromptTypes.Type));
 
@@ -74,6 +79,7 @@ namespace PathMaker {
 
         public static void LoadCommandTransitionDataGridView(DataGridView gridView, Table table) {
             BindingList<CommandTransitionRow> ctList = CommandTransitionRow.GetRowsFromTable(table);
+            string myDefaultConfirmValue = PathMaker.LookupStartShadow().GetDefaultConfirmMode(); 
 
             if (gridView.Columns.Count == 0) {
                 gridView.AutoGenerateColumns = false;
@@ -84,7 +90,8 @@ namespace PathMaker {
                 AddTextBoxColumn(gridView, CommandTransitionRow.ActionColumnName);
                 AddTextBoxColumn(gridView, CommandTransitionRow.GotoColumnName);
                 AddStringComboBoxColumn(gridView, CommandTransitionRow.ConfirmColumnName);
-                LoadComboBoxColumn(gridView, CommandTransitionRow.ConfirmColumnName, confirmValues);
+                //LoadComboBoxColumn(gridView, CommandTransitionRow.ConfirmColumnName, confirmValues);
+                LoadComboBoxColumn(gridView, CommandTransitionRow.ConfirmColumnName, confirmValues, PathMaker.LookupStartShadow().GetDefaultConfirmMode());//JDK - need to find a way to set display default here - it DOES NOT work with Never as the default value 
                 AddTextBoxColumn(gridView, CommandTransitionRow.OptionDateStampColumnName);
                 AddTextBoxColumn(gridView, CommandTransitionRow.VocabDateStampColumnName);
                 AddTextBoxColumn(gridView, CommandTransitionRow.DTMFDateStampColumnName);
@@ -95,10 +102,15 @@ namespace PathMaker {
 
                 gridView.DefaultValuesNeeded -= new DataGridViewRowEventHandler(OnCommandTransitionDefaultValuesNeeded);
                 gridView.DefaultValuesNeeded += new DataGridViewRowEventHandler(OnCommandTransitionDefaultValuesNeeded);
+                //gridView.RowsAdded - new DataGridViewCellFormattingEventHandler(OnCellDropBoxCellSettingDefault);//JDK
+                //gridView.RowsAdded -= new DataGridViewRowsAddedEventHandler(OnCellDropBoxCellSettingDefault);//JDK
+                //gridView.DefaultValuesNeeded += new DataGridViewRowEventHandler(OnCellDropBoxCellSettingDefault);//JDK
 
                 ApplyCommonDataGridViewSettings<CommandTransitionRow>(gridView, false);
                 HideDateStampColumns(gridView);
                 gridView.Columns[CommandTransitionRow.GotoColumnName].ReadOnly = true;
+
+
             }
 
             gridView.DataSource = ctList;
@@ -116,7 +128,8 @@ namespace PathMaker {
                 AddTextBoxColumn(gridView, CommandTransitionRow.ActionColumnName);
                 AddItemComboBoxColumn(gridView, CommandTransitionRow.GotoColumnName);
                 AddStringComboBoxColumn(gridView, CommandTransitionRow.ConfirmColumnName);
-                LoadComboBoxColumn(gridView, CommandTransitionRow.ConfirmColumnName, confirmValues);
+                //LoadComboBoxColumn(gridView, CommandTransitionRow.ConfirmColumnName, confirmValues);
+                LoadComboBoxColumn(gridView, CommandTransitionRow.ConfirmColumnName, confirmValues, PathMaker.LookupStartShadow().GetDefaultConfirmMode());//JDK Added this - it works with Never as the default value
                 AddTextBoxColumn(gridView, CommandTransitionRow.OptionDateStampColumnName);
                 AddTextBoxColumn(gridView, CommandTransitionRow.VocabDateStampColumnName);
                 AddTextBoxColumn(gridView, CommandTransitionRow.DTMFDateStampColumnName);
@@ -163,6 +176,8 @@ namespace PathMaker {
             }
 
             // starts us off with the right set of options - we'll add dynamically later if new ones are added in EnterConfirmationGridView
+            //LoadComboBoxColumn(gridView, ConfirmationPromptRow.OptionColumnName, GetConfirmationPromptComboValues(table, (int)TableColumns.CommandTransitions.Option));
+            //JDK changed in hopes of finding trhe bug - 
             LoadComboBoxColumn(gridView, ConfirmationPromptRow.OptionColumnName, GetConfirmationPromptComboValues(table, (int)TableColumns.ConfirmationPrompts.Option));
 
             gridView.DataSource = cpList;
@@ -318,6 +333,16 @@ namespace PathMaker {
             textBox.KeyDown += new KeyEventHandler(OnTextBoxKeyDownForEditorHotKey);
         }
 
+        internal static void LoadDesignNotesTextBox(TextBox textBox, Table table)
+        {
+            if (!table.IsEmpty())
+                textBox.Text = table.GetData(0, (int)TableColumns.DesignNotes.Text);
+            else
+                textBox.Text = string.Empty;
+            textBox.KeyDown -= new KeyEventHandler(OnTextBoxKeyDownForEditorHotKey);
+            textBox.KeyDown += new KeyEventHandler(OnTextBoxKeyDownForEditorHotKey);
+        }
+
         internal static void LoadStateIdTextBoxes(TextBox statePrefixTextBox, TextBox stateNumberTextBox, TextBox stateNameTextBox, string stateId) {
             if (stateId.Length != 0) {
                 string tmp = StateShadow.StateIdForDisplay(stateId);
@@ -388,6 +413,13 @@ namespace PathMaker {
             return table;
         }
 
+        internal static Table UnloadDesignNotesTextBox(TextBox textBox)
+        {
+            Table table = new Table(1, 2);
+            table.SetData(0, (int)TableColumns.DesignNotes.Text, textBox.Text);
+            return table;
+        }
+
         internal static void LoadSubDialogListBox(ListBox listBox, string currentValue) {
             List<ComboBoxItem> list = new List<ComboBoxItem>();
 
@@ -435,10 +467,40 @@ namespace PathMaker {
             gridView.DataSource = clList;
         }
 
+        internal static void LoadPrefixListDataGridView(DataGridView gridView, Table table) {
+            BindingList<PrefixListRow> clList = PrefixListRow.GetRowsFromTable(table);
+
+            if (gridView.Columns.Count == 0)
+            {
+                gridView.AutoGenerateColumns = false;
+                AddTextBoxColumn(gridView, PrefixListRow.PrefixColumnName);
+                AddTextBoxColumn(gridView, PrefixListRow.MeaningColumnName);
+                
+                //gridView.DefaultValuesNeeded -= new DataGridViewRowEventHandler(OnPrefixListDefaultValuesNeeded);
+                //gridView.DefaultValuesNeeded += new DataGridViewRowEventHandler(OnPrefixListDefaultValuesNeeded);
+
+                //gridView.CellValidating -= new DataGridViewCellValidatingEventHandler(OnPrefixListCellValidating);
+                //gridView.CellValidating += new DataGridViewCellValidatingEventHandler(OnPrefixListCellValidating);
+                //gridView.CellEndEdit -= new DataGridViewCellEventHandler(OnPrefixListCellEndEdit);
+                //gridView.CellEndEdit += new DataGridViewCellEventHandler(OnPrefixListCellEndEdit);
+
+                ApplyCommonDataGridViewSettings<PrefixListRow>(gridView, true);
+            }
+
+            gridView.DataSource = clList;
+        }
+
         internal static Table UnloadChangeLogDataGridView(DataGridView gridView) {
             BindingList<ChangeLogRow> list = gridView.DataSource as BindingList<ChangeLogRow>;
             return ChangeLogRow.GetTableFromRows(list);
         }
+        
+        internal static Table UnloadPrefixListDataGridView(DataGridView gridView)
+        {
+            BindingList<PrefixListRow> list = gridView.DataSource as BindingList<PrefixListRow>;
+            return PrefixListRow.GetTableFromRows(list);
+        }
+
 
         internal static void SetTableDataAndDateIfNecessary(Table table, int row, string newValue, 
             TableColumns.NameValuePairs valueColumn, TableColumns.NameValuePairs dateColumn) {
@@ -447,7 +509,11 @@ namespace PathMaker {
                 return;
 
             table.SetData(row, (int)valueColumn, newValue);
-            table.SetData(row, (int)dateColumn, DateTime.Today.ToString(Strings.DateColumnFormatString));
+            //table.SetData(row, (int)dateColumn, DateTime.Today.ToString(Strings.DateColumnFormatString)); 
+            if (table.GetData(0,0) != "Mode")
+            {
+            	table.SetData(row, (int)dateColumn, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());//JDK added this to fix highlighting by version
+            }
         }
 
         public static void FixPrompts(DataGridView view, int wordCol, int promptIdCol) {
@@ -476,9 +542,13 @@ namespace PathMaker {
 
                     if (promptType != null && promptType.Length > 0) {
                         letter = promptType.ToLower().Substring(0, 1)[0];
+                        //JDL added fix to prevent letter from stepping on the confirmation reserved letter
+                        if (letter == Strings.DefaultConfirmationPromptLetter) 
+                            letter = Strings.DefaultExitBridgePromptLetter; //JDK added a new prompt letter "x"
+                        
                     }
                     //Update prompt id's                    
-                    CommonForm.CalculateDefaultPromptIdIfAppropriate(view, cnt, wordCol, promptIdCol, letter);
+                    CommonForm.CalculateDefaultPromptIdIfAppropriate(view, cnt, wordCol, promptIdCol, letter, false);
 
                 }
             }
@@ -491,8 +561,21 @@ namespace PathMaker {
             comboBox.SelectedItem = value;
         }
 
+        internal static void LoadDefaultConfirmTypeComboBox(ComboBox comboBox, string value)
+        {
+            comboBox.Items.Clear();
+            foreach (string s in confirmValues)
+                comboBox.Items.Add(s);
+            comboBox.SelectedItem = value;
+        }
+
         internal static string UnloadSortOrderComboBox(ComboBox comboBox) {
             return comboBox.SelectedItem as string;
         }
+        internal static string UnloadDefaultConfirmTypeComboBox(ComboBox comboBox)
+        {
+            return comboBox.SelectedItem as string;
+        }
+
     }
 }

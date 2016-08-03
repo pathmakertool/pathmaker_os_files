@@ -23,6 +23,11 @@ namespace PathMaker {
             return textBox.Text;
         }
 
+        public void SetText(string textContents)
+        {
+            textBox.Text = textContents;
+        }
+
         private void okButton_Click(object sender, EventArgs e) {
             Hide();
             DialogResult = DialogResult.OK;

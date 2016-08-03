@@ -15,13 +15,13 @@ namespace PathMaker {
             public List<string> duplicateIds = null;
 
             public PromptRecording(string id, string wording) {
-                PromptId = id;
-                Wording = wording;
+                PromptId = id.Trim();
+                Wording = wording.Trim();
             }
             public void AddDuplicateId(string id) {
                 if (duplicateIds == null)
                     duplicateIds = new List<string>();
-                duplicateIds.Add(id);
+                duplicateIds.Add(id.Trim());
             }
             public string PromptId { get; set; }
             public string Wording { get; set; }
@@ -34,18 +34,20 @@ namespace PathMaker {
 
         virtual public void AddPromptRecording(string id, string wording) {
             PromptRecording recording;
-            if (promptIdToWordingMap.ContainsKey(id)) {
-                if (!duplicateIdList.Contains(id))
-                    duplicateIdList.Add(id);
+            if (promptIdToWordingMap.ContainsKey(id.Trim()))
+            {
+                if (!duplicateIdList.Contains(id.Trim()))
+                    duplicateIdList.Add(id.Trim());
                 return;
             }
-            promptIdToWordingMap.Add(id, wording);
-            if (wordingToRecordingMap.TryGetValue(wording, out recording)) {
-                recording.AddDuplicateId(id);
+            promptIdToWordingMap.Add(id.Trim(), wording.Trim());
+            if (wordingToRecordingMap.TryGetValue(wording.Trim(), out recording))
+            {
+                recording.AddDuplicateId(id.Trim());
             }
             else {
-                recording = new PromptRecording(id, wording);
-                wordingToRecordingMap.Add(wording, recording);
+                recording = new PromptRecording(id.Trim(), wording.Trim());
+                wordingToRecordingMap.Add(wording.Trim(), recording);
             }
         }
 
@@ -59,7 +61,7 @@ namespace PathMaker {
 
         virtual internal string getWording(string id) {
             string wording;
-            if (promptIdToWordingMap.TryGetValue(id, out wording))
+            if (promptIdToWordingMap.TryGetValue(id.Trim(), out wording))
                 return wording;
             return null;
         }

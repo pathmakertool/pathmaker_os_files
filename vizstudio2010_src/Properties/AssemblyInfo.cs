@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("PathMaker")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("VUI Design Tool Add-on for MS Visio 32-bit")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Convergys")]
 [assembly: AssemblyProduct("PathMaker")]
-[assembly: AssemblyCopyright("Copyright © Convergys 2011-2014")]
+[assembly: AssemblyCopyright("Copyright © Convergys 2011-2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

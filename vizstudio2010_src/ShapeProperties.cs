@@ -17,9 +17,11 @@ namespace PathMaker {
         public const string MaxHandling = "Prop.MaxHandling";
         public const string StateId = "Prop.StateId";
         public const string DeveloperNotes = "Prop.Notes";
+        public const string DesignNotes = "Prop.Notes2";
         public const string SpecialSettings = "Prop.SpecialSettings";
         public const string Transitions = "Prop.Transitions";
         public const string TheText = "TheText";
+        public const string Description = "Prop.AppDesc";
         public const string EventDrop = "EventDrop";
         public const string EventDblClick = "EventDblClick";
 
@@ -42,6 +44,20 @@ namespace PathMaker {
             public const string ShapeType = ShapeProperties.ShapeType;
         }
 
+        // App Description  added 08-12-2014 JDK
+        public class AppDesc {
+            public const string Description = "Prop.AppDesc";
+            public const string ShapeType = ShapeProperties.ShapeType;
+        }
+        
+        // Prefix List Table  added 08-21-2014 JDK
+        public class PrefixList
+        {
+            public const string Prefix = "Prop.PrefixList";
+            public const string ShapeType = ShapeProperties.ShapeType;
+        }
+
+
         // Start
         public class Start {
             public const string DefaultSettings = "Prop.DefaultSettings";
@@ -61,6 +77,7 @@ namespace PathMaker {
             public const string CommandTransitions = ShapeProperties.CommandTransitions;
             public const string ConfirmationPrompts = ShapeProperties.ConfirmationPrompts;
             public const string DeveloperNotes = ShapeProperties.DeveloperNotes;
+            public const string DesignNotes = ShapeProperties.DesignNotes;
             public const string SpecialSettings = ShapeProperties.SpecialSettings;
             public const string LastUpdate = ShapeProperties.LastUpdate;
             public const string ShapeType = ShapeProperties.ShapeType;
@@ -73,6 +90,7 @@ namespace PathMaker {
             public const string Prompts = "Prop.Prompts";
             public const string Transitions = ShapeProperties.Transitions;
             public const string DeveloperNotes = ShapeProperties.DeveloperNotes;
+            public const string DesignNotes = ShapeProperties.DesignNotes;
             public const string SpecialSettings = ShapeProperties.SpecialSettings;
             public const string LastUpdate = ShapeProperties.LastUpdate;
             public const string ShapeType = ShapeProperties.ShapeType;
@@ -83,6 +101,7 @@ namespace PathMaker {
             public const string StateId = ShapeProperties.StateId;
             public const string Transitions = ShapeProperties.Transitions;
             public const string DeveloperNotes = ShapeProperties.DeveloperNotes;
+            public const string DesignNotes = ShapeProperties.DesignNotes;
             public const string LastUpdate = ShapeProperties.LastUpdate;
             public const string ShapeType = ShapeProperties.ShapeType;
         }
@@ -92,6 +111,7 @@ namespace PathMaker {
             public const string StateId = ShapeProperties.StateId;
             public const string Transitions = ShapeProperties.Transitions;
             public const string DeveloperNotes = ShapeProperties.DeveloperNotes;
+            public const string DesignNotes = ShapeProperties.DesignNotes;
             public const string LastUpdate = ShapeProperties.LastUpdate;
             public const string ShapeType = ShapeProperties.ShapeType;
         }
@@ -110,6 +130,7 @@ namespace PathMaker {
         public class SubDialog {
             public const string StateId = ShapeProperties.StateId;
             public const string DeveloperNotes = ShapeProperties.DeveloperNotes;
+            public const string DesignNotes = ShapeProperties.DesignNotes;
             public const string LastUpdate = ShapeProperties.LastUpdate;
             public const string ShapeType = ShapeProperties.ShapeType;
         }

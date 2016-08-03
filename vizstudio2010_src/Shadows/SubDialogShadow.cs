@@ -48,12 +48,53 @@ namespace PathMaker {
                 return;
 
             if (tmp.IsEmpty()) {
-                table.SetData(0, (int)TableColumns.DeveloperNotes.TextDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                //table.SetData(0, (int)TableColumns.DeveloperNotes.TextDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                table.SetData(0, (int)TableColumns.DeveloperNotes.TextDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());//JDK added
+                
                 Common.SetCellTable(shape, ShapeProperties.Interaction.DeveloperNotes, table);
             }
             else if (!tmp.GetData(0, (int)TableColumns.DeveloperNotes.Text).Equals(table.GetData(0, (int)TableColumns.DeveloperNotes.Text))) {
-                table.SetData(0, (int)TableColumns.DeveloperNotes.TextDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
-                Common.SetCellTable(shape, ShapeProperties.Interaction.DeveloperNotes, table);
+                //table.SetData(0, (int)TableColumns.DeveloperNotes.TextDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                table.SetData(0, (int)TableColumns.DeveloperNotes.TextDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());//JDK added
+                
+                Common.SetCellTable(shape, ShapeProperties.SubDialog.DeveloperNotes, table);
+            }
+        }
+
+        internal override void AddDesignNotesToList(DesignNotesList designNotesList)
+        {
+            string id = GetStateId();
+            string wording = GetDesignNotes().ToString();
+
+            designNotesList.AddDesignNoteContent(id, wording);
+        }
+
+
+        internal Table GetDesignNotes()
+        {
+            return Common.GetCellTable(shape, ShapeProperties.SubDialog.DesignNotes);
+        }
+
+        internal void SetDesignNotes(Table table)
+        {
+            Table tmp = GetDesignNotes();
+
+            if ((table.GetData(0, 0) == null || table.GetData(0, 0).Length == 0) && tmp.IsEmpty())
+                return;
+
+            if (tmp.IsEmpty())
+            {
+                //table.SetData(0, (int)TableColumns.DesignNotes.TextDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));                
+                table.SetData(0, (int)TableColumns.DesignNotes.TextDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());//JDK added
+                
+                Common.SetCellTable(shape, ShapeProperties.SubDialog.DesignNotes, table);
+            }
+            else if (!tmp.GetData(0, (int)TableColumns.DesignNotes.Text).Equals(table.GetData(0, (int)TableColumns.DesignNotes.Text)))
+            {
+                //table.SetData(0, (int)TableColumns.DesignNotes.TextDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                table.SetData(0, (int)TableColumns.DesignNotes.TextDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());//JDK added
+                
+                Common.SetCellTable(shape, ShapeProperties.SubDialog.DesignNotes, table);
             }
         }
 
@@ -73,6 +114,7 @@ namespace PathMaker {
             return Common.GetGotoTargetFromData(theOne.get_UniqueID((short)VisUniqueIDArgs.visGetOrMakeGUID));
         }
 
+        
         internal List<ReturnPair> GetReturnPairs() {
             // find all the call sub dialogs that reference this one
             // find all their input and outputs and make a table from that

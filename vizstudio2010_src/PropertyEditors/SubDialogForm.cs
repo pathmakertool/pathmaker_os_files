@@ -36,6 +36,11 @@ namespace PathMaker {
             table = shadow.GetDeveloperNotes();
             CommonForm.LoadDeveloperNotesTextBox(developerNotesTextBox, table);
 
+
+            // Design Notes
+            table = shadow.GetDesignNotes();
+            CommonForm.LoadDesignNotesTextBox(designNotesTextBox, table);
+
             statePrefixTextBox.Focus();
         }
 
@@ -51,10 +56,26 @@ namespace PathMaker {
             // Developer Notes
             table = CommonForm.UnloadDeveloperNotesTextBox(developerNotesTextBox);
             shadow.SetDeveloperNotes(table);
+
+            // Design Notes
+            table = CommonForm.UnloadDesignNotesTextBox(designNotesTextBox);
+            shadow.SetDesignNotes(table);
         }
 
         public void RedoFormPromptIdsIfNecessary(string promptIdFormat) {
         //place holder
         }
+
+        private void developerNotesTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void designNotesTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+       
     }
 }

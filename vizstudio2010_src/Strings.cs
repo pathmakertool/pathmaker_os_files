@@ -7,7 +7,8 @@ namespace PathMaker
 {
     // constants for use throughout the app
     class Strings
-    {   
+    {
+        public const string StampFormatChangeDate = "12/31/2017";//JDK set this date as the trigger for forcing updates to date stamp hidden fields
         public const string ResourceFileName = "PathMaker.Properties.Resources";
 
         public const string OpenDialogTitleRes = "OpenDialogTitle";
@@ -45,10 +46,6 @@ namespace PathMaker
         public const string DefaultSettingsMode = "Mode";
         public const string DefaultSettingsBargeIn = "Barge-in";
         public const string DefaultSettingsPromptIDFormat = "Prompt ID Format";
-        public const string DefaultSettingsRetriesInTotalErrors = "Retries in Total Errors";
-        public const string DefaultSettingsTimeoutsInTotalErrors = "Timeouts in Total Errors";
-        public const string DefaultSettingsDisconfirmsInTotalErrors = "Disconfirms in Total Errors";
-        public const string DefaultSettingsStateSortOrder = "State Sort Order";
 
         public const string DateStampColumnSuffix = "DateStamp";
 
@@ -75,6 +72,7 @@ namespace PathMaker
         public const string StateSortOrderAlphaNumerical = "Alpha-Numerical";
         public const string StateSortOrderNumericalOnly = "Numerical-Alpha";
         public const string StateSortOrderVisioHeuristic = "Visio Heuristic";
+        public const string StateSortOrderVisioPageGroups = "Visio Page Groups";
 
         public const string ModeSpeech = "Speech";
         public const string ModeDTMF = "DTMF";
@@ -95,6 +93,12 @@ namespace PathMaker
         public const string HighlightColorPink = "Pink";
         public const string HighlightColorAqua = "Aqua";
         public const string HighlightColorBlue = "Blue";
+        public const string HighlightColorYellow2 = "DarkYellow";
+        public const string HighlightColorViolet = "Violet";
+        public const string HighlightColorTeal = "Teal";
+        public const string HighlightColorGrey = "Grey";
+        public const string HighlightColorGrey2 = "DarkGrey";
+        public const string HighlightColorTurquoise = "Turquoise";
 
         public const string BeginConnectionPointCellName = "BeginX";
         public const string EndConnectionPointCellName = "EndX";
@@ -103,22 +107,37 @@ namespace PathMaker
         public const string OffPageConnectorDblClickCommand = "RUNADDONWARGS(\"OPC\",\"/CMD=2\")";
         public const string OffPageConnectorTextCommand = "RUNADDONWARGS(\"OPC\",\"/CMD=3\")";
 
-        public const string DisconnectedConnectorTarget = "Disconnected";
+        public const string DisconnectedConnectorTarget = "Disconnected or missing connection link";
 
         public const string LabelStartBracket = "[";
         public const string LabelEndBracket = "]";
         public const string DynamicOptionKeyword = "<dynamic>";  // should be case insensitive
 
         public const string PromptTypeSeparator = "/";
-
         public const string IndentCharacterString = "»";
-
         public const string DefaultPromptType = "Initial";
 
-        public const string MaxRetriesLabel = "Max Retries";
-        public const string MaxTimeoutsLabel = "Max Timeouts";
         public const string MaxDisconfirmsLabel = "Max Disconfirms";
         public const string MaxTotalErrorsLabel = "Max Total Errors";
+
+        //***************************************************************************************
+        public const string MaxRetriesLabel = "Max Retries";
+        public const string MaxTimeoutsLabel = "Max Timeouts";
+        public const string DefaultSettingsRetriesInTotalErrors = "Retries in Total Errors";
+        public const string DefaultSettingsTimeoutsInTotalErrors = "Timeouts in Total Errors";
+        //***************************************************************************************
+        /*  These strings should be used for ML builds when the time comes to prepare for them 
+         * 
+             public const string MaxRetriesLabel = "Max Nomatches";
+             public const string MaxTimeoutsLabel = "Max Noinputs";
+             public const string DefaultSettingsRetriesInTotalErrors = "Nomatches in Total Errors";
+             public const string DefaultSettingsTimeoutsInTotalErrors = "Noinputs in Total Errors";
+        */
+
+        public const string DefaultSettingsDisconfirmsInTotalErrors = "Disconfirms in Total Errors";
+        public const string DefaultSettingsStateSortOrder = "State Sort Order";
+        public const string DefaultSettingsConfirmMode = "Default Confirm Mode";
+        public const string DefaultConfirmModeValue = Strings.ConfirmNever;
 
         public const string DateColumnFormatString = "MM/dd/yyyy";
 
@@ -137,6 +156,7 @@ namespace PathMaker
 
         public const char DefaultPromptLetter = 'i';
         public const char DefaultConfirmationPromptLetter = 'c';
+        public const char DefaultExitBridgePromptLetter = 'x';//JDK 08-27-14 added this to prevent stepping on the confirmation letter "c" with other exit prompting
 
         public const char PromptIdSeparationChar = '_';
 
@@ -165,7 +185,11 @@ namespace PathMaker
         public const string DefaultCopyFileNameSuffix = "_copy.vui";
         public const string TitleBarSuffix = " - PathMaker";
 
-        public const string SERVERNAME = "http://fastpathserver.intervoice.int:8080/PathRunner/";
+        public const string SERVERIP = "148.181.191.246";   //JDK added to help change validation server at runtime by design team
+        public const string SERVERPORT = "8080";            //JDK added to help change validation server at runtime by design team
+        public const string SERVERPATH = "/PathRunner/";    //JDK added to help change validation server at runtime by design team
+        public const string SERVERNAME = "http://148.181.191.246:8080/PathRunner/";
+        
         public const string SAVEJSPNAME = "SaveFile.jsp?";
         public const string VALIDATEJSPNAME = "ValidateSpecWorker.jsp";
         public const string FILENAME = "filename=";
@@ -179,5 +203,8 @@ namespace PathMaker
         public const string InteractionShadow = "InteractionShadow";
 
         public const string MaxHandlerGlobalReferenceNote = "See Defaults";
+
+        public const string DefaultVersionStamp = "0.0";
     }
+
 }

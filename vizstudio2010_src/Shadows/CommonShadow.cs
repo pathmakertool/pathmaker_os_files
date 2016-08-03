@@ -55,6 +55,9 @@ namespace PathMaker {
                     if (letter - 'a' < 0 || letter - 'a' > 25)
                         letter = Strings.DefaultPromptType.ToLower().Substring(0, 1)[0];
 
+                    if (letter == Strings.DefaultConfirmationPromptLetter)
+                        letter = Strings.DefaultExitBridgePromptLetter;//JDK 08-27-14 added this to prevent stepping on confirm prompting with special exit prompting
+                         
                     string wording = table.GetData(row, (int)TableColumns.PromptTypes.Wording);
                     if (wording == null || wording.Length == 0 || wording.Trim().StartsWith(Strings.CalculatedPromptStartString) || wording.Trim().StartsWith(Strings.PromptTypeMacroStartString))
                         continue;
@@ -71,7 +74,8 @@ namespace PathMaker {
 
                     if (!table.GetData(row, (int)TableColumns.PromptTypes.Id).Equals(newPromptId)) {
                         table.SetData(row, (int)TableColumns.PromptTypes.Id, newPromptId);
-                        table.SetData(row, (int)TableColumns.PromptTypes.IdDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                        //table.SetData(row, (int)TableColumns.PromptTypes.IdDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                        table.SetData(row, (int)TableColumns.PromptTypes.IdDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());//JDK added
                     }
                     nextNumArray[letter - 'a']++;
                     added++;
@@ -88,7 +92,9 @@ namespace PathMaker {
                         continue;
 
                     table.SetData(row, (int)TableColumns.PromptTypes.Id, nextNum.ToString());
-                    table.SetData(row, (int)TableColumns.PromptTypes.IdDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                    //table.SetData(row, (int)TableColumns.PromptTypes.IdDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                    table.SetData(row, (int)TableColumns.PromptTypes.IdDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());//JDK added
+                    
                     nextNum++;
                 }
 
@@ -127,7 +133,8 @@ namespace PathMaker {
 
                     if (!table.GetData(row, (int)TableColumns.ConfirmationPrompts.Id).Equals(newPromptId)) {
                         table.SetData(row, (int)TableColumns.ConfirmationPrompts.Id, newPromptId);
-                        table.SetData(row, (int)TableColumns.ConfirmationPrompts.IdDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                        //table.SetData(row, (int)TableColumns.ConfirmationPrompts.IdDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                        table.SetData(row, (int)TableColumns.ConfirmationPrompts.IdDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());//JDK added
                     }
                     nextNum++;
                 }
@@ -143,7 +150,9 @@ namespace PathMaker {
                         continue;
 
                     table.SetData(row, (int)TableColumns.ConfirmationPrompts.Id, nextNum.ToString());
-                    table.SetData(row, (int)TableColumns.ConfirmationPrompts.IdDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                    //table.SetData(row, (int)TableColumns.ConfirmationPrompts.IdDateStamp, DateTime.Now.ToString(Strings.DateColumnFormatString));
+                    table.SetData(row, (int)TableColumns.ConfirmationPrompts.IdDateStamp, PathMaker.LookupChangeLogShadow().GetLastChangeVersion());//JDK added
+                    
                     nextNum++;
                 }
 

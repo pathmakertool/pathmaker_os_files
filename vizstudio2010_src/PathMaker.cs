@@ -15,6 +15,8 @@ namespace PathMaker {
         private static Dictionary<string, Shadow> shadowShapeMap = null;
         private static bool OneTimeOnlyActivateHack = true;
         private static bool SuspendConnectHandlingToMoveAConnectionPoint = false;
+        public static string validationServerIp = Strings.SERVERIP;     //JDK added to help change validation server at runtime by design team
+        public static string validationServerName = Strings.SERVERNAME; //JDK added to help change validation server at runtime by design team
 
         private static PathRunnerBackgroundWorker pathRunnerBackgroundWorker = null;
 
@@ -209,6 +211,10 @@ namespace PathMaker {
             BuildShadowShapeMap();
             // and add the event handlers which are associated with the document (as opposed to the application)
             SetupDocumentEventHandlersAndRemoveAccelerators();
+
+
+            //JDK added this to update older formats for date stamps to version stamps
+            Common.RedoAllHiddenPromptMarkers();
         }
 
         public static List<Shadow> LookupAllShadows() {
@@ -255,6 +261,28 @@ namespace PathMaker {
                 ChangeLogShadow changeLogShadow = shadow as ChangeLogShadow;
                 if (changeLogShadow != null)
                     return shadow as ChangeLogShadow;
+            }
+            return null;
+        }
+
+
+        public static AppDescShadow LookupAppDescShadow()
+        {
+            foreach (Shadow shadow in shadowShapeMap.Values) {
+                AppDescShadow appDescShadow = shadow as AppDescShadow;
+                if (appDescShadow != null)
+                    return shadow as AppDescShadow;
+            }
+            return null;
+        }
+
+        public static PrefixListShadow LookupPrefixListShadow()
+        {
+            foreach (Shadow shadow in shadowShapeMap.Values)
+            {
+                PrefixListShadow appDescShadow = shadow as PrefixListShadow;
+                if (appDescShadow != null)
+                    return shadow as PrefixListShadow;
             }
             return null;
         }
@@ -518,9 +546,11 @@ namespace PathMaker {
 
                 if (shadow.GetShapeType() == ShapeTypes.DocTitle ||
                     shadow.GetShapeType() == ShapeTypes.ChangeLog ||
+                    shadow.GetShapeType() == ShapeTypes.AppDesc ||
+                    shadow.GetShapeType() == ShapeTypes.PrefixList ||
                     shadow.GetShapeType() == ShapeTypes.Start) {
                     if (LookupShadowsByShapeType(shadow.GetShapeType()).Count > 1) {
-                        Common.ErrorMessage("Cannot have two Start, Change Log, or Document Title shapes");
+                        Common.ErrorMessage("Cannot have two Start, Change Log, or Document Title, App Description or Prefix List shapes");
                         Common.ForcedSetShapeText(shape, Strings.ToBeDeletedLabel);
                     }
                 }
@@ -721,6 +751,7 @@ namespace PathMaker {
             // the stencils in that case.  OnSrcDocumentChanged doesn't 
             // cleanup the stencils if the window isn't visible yet
             StencilCleanup();
+
         }
 
         public string getCurrentFileDirectory() {
@@ -733,5 +764,35 @@ namespace PathMaker {
             else
                 return System.IO.Path.GetDirectoryName(visioControl.Src);
         }
+
+        static public string GetValidationServer()
+        {
+            return validationServerName;    //JDK added to help change validation server at runtime by design team
+        }
+
+        static public void SetValidationServer(string overrideValidationServer)
+        {
+            validationServerName = overrideValidationServer;    //JDK added to help change validation server at runtime by design team
+        }
+
+        static public string GetValidationServerIP()
+        {
+            return validationServerIp;  //JDK added to help change validation server at runtime by design team
+        }
+
+        static public void SetValidationServerIP(string overrideValidationIp)
+        {
+            validationServerIp = overrideValidationIp;  //JDK added to help change validation server at runtime by design team
+        }
+
+        private void toolStripLabel1_Click(object sender, EventArgs e)
+        {
+            //JDK - might need to add something more here...
+            ToolStripTextBox textControl = sender as ToolStripTextBox;
+            textControl.Text = "Server: " + PathMaker.GetValidationServerIP();
+        }
+
+        
+       
     }
 }

@@ -25,6 +25,8 @@
         private void InitializeComponent() {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.defaultSettingsTab = new System.Windows.Forms.TabPage();
+            this.sortOrderComboBox = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -50,8 +52,8 @@
             this.maxHandlingDataGridView = new System.Windows.Forms.DataGridView();
             this.okButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.sortOrderComboBox = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.defaultConfirmTypeComboBox = new System.Windows.Forms.ComboBox();
             this.tabControl1.SuspendLayout();
             this.defaultSettingsTab.SuspendLayout();
             this.initializationTab.SuspendLayout();
@@ -82,6 +84,8 @@
             // 
             // defaultSettingsTab
             // 
+            this.defaultSettingsTab.Controls.Add(this.defaultConfirmTypeComboBox);
+            this.defaultSettingsTab.Controls.Add(this.label8);
             this.defaultSettingsTab.Controls.Add(this.sortOrderComboBox);
             this.defaultSettingsTab.Controls.Add(this.label1);
             this.defaultSettingsTab.Controls.Add(this.label7);
@@ -103,6 +107,24 @@
             this.defaultSettingsTab.TabIndex = 3;
             this.defaultSettingsTab.Text = "Default Settings";
             this.defaultSettingsTab.UseVisualStyleBackColor = true;
+            // 
+            // sortOrderComboBox
+            // 
+            this.sortOrderComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.sortOrderComboBox.FormattingEnabled = true;
+            this.sortOrderComboBox.Location = new System.Drawing.Point(159, 181);
+            this.sortOrderComboBox.Name = "sortOrderComboBox";
+            this.sortOrderComboBox.Size = new System.Drawing.Size(180, 21);
+            this.sortOrderComboBox.TabIndex = 13;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(17, 185);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(118, 13);
+            this.label1.TabIndex = 12;
+            this.label1.Text = "State Output Sort Order";
             // 
             // label7
             // 
@@ -338,29 +360,29 @@
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             // 
-            // label1
+            // label8
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(17, 185);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(118, 13);
-            this.label1.TabIndex = 12;
-            this.label1.Text = "State Output Sort Order";
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(17, 211);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(106, 13);
+            this.label8.TabIndex = 14;
+            this.label8.Text = "Default Confirm Type";
             // 
-            // sortOrderComboBox
+            // defaultConfirmTypeComboBox
             // 
-            this.sortOrderComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.sortOrderComboBox.FormattingEnabled = true;
-            this.sortOrderComboBox.Location = new System.Drawing.Point(159, 181);
-            this.sortOrderComboBox.Name = "sortOrderComboBox";
-            this.sortOrderComboBox.Size = new System.Drawing.Size(180, 21);
-            this.sortOrderComboBox.TabIndex = 13;
+            this.defaultConfirmTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.defaultConfirmTypeComboBox.FormattingEnabled = true;
+            this.defaultConfirmTypeComboBox.Location = new System.Drawing.Point(159, 208);
+            this.defaultConfirmTypeComboBox.Name = "defaultConfirmTypeComboBox";
+            this.defaultConfirmTypeComboBox.Size = new System.Drawing.Size(180, 21);
+            this.defaultConfirmTypeComboBox.TabIndex = 15;
             // 
             // StartForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1008, 708);
+            this.ClientSize = new System.Drawing.Size(1008, 711);
             this.ControlBox = false;
             this.Controls.Add(this.cancelButton);
             this.Controls.Add(this.okButton);
@@ -423,5 +445,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox sortOrderComboBox;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ComboBox defaultConfirmTypeComboBox;
     }
 }

@@ -80,6 +80,9 @@ namespace PathMaker {
             }
         }
 
+        virtual internal void RedoHiddenDateMarkers(StateShadow stateShadow) { }
+
+
         virtual internal void SetStateId(string stateId) {
             // remove the old prefix+number from the list
             StatePrefixAndNumberManager.Remove(this);

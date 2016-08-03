@@ -18,6 +18,7 @@ namespace PathMaker {
         string originalTimeouts;
         string originalDisconfirms;
         string originalSortOrder;
+        public string originalDefaultConfirmType = Strings.DefaultConfirmModeValue;
 
         public StartForm() {
             InitializeComponent();
@@ -32,6 +33,10 @@ namespace PathMaker {
         public Shadow GetShadow() {
             return shadow;
         }
+
+       //public string GetDefaultConfirmType() {
+            //return shadow.GetDefaultSetting(Strings.DefaultSettingsConfirmMode);
+        //}
 
         // used for handling confirmations
         public DataGridView GetCommandsDataGridView() {
@@ -60,6 +65,7 @@ namespace PathMaker {
             timeoutsComboBox.Format += new ListControlConvertEventHandler(OnControlFormat);
             disconfirmsComboBox.Format += new ListControlConvertEventHandler(OnControlFormat);
             sortOrderComboBox.Format += new ListControlConvertEventHandler(OnControlFormat);
+            defaultConfirmTypeComboBox.Format += new ListControlConvertEventHandler(OnControlFormat);
 
             for (int r = 0; r < table.GetNumRows(); r++) {
                 string name = table.GetData(r, (int)TableColumns.NameValuePairs.Name);
@@ -114,7 +120,14 @@ namespace PathMaker {
                     if (color != null)
                         sortOrderComboBox.BackColor = color.Value;
                 }
-            }
+                else if (name.Equals(Strings.DefaultSettingsConfirmMode))
+                {
+                    originalDefaultConfirmType = value;
+                    CommonForm.LoadDefaultConfirmTypeComboBox(defaultConfirmTypeComboBox, value);
+                    if (color != null)
+                        defaultConfirmTypeComboBox.BackColor = color.Value;
+                }
+            } 
 
             // Initialization Name/Value Pairs
             table = shadow.GetInitialization();
@@ -175,6 +188,10 @@ namespace PathMaker {
                 if (originalSortOrder.Equals(comboBox.Text))
                     return;
             }
+            else if (comboBox == defaultConfirmTypeComboBox) {
+                if (originalDefaultConfirmType.Equals(comboBox.Text))
+                    return;
+            }
 
             System.Drawing.Color? color = Common.GetHighlightColor(DateTime.Now);
             if (color != null)
@@ -194,6 +211,7 @@ namespace PathMaker {
             string timeouts = CommonForm.UnloadYNComboBox(timeoutsComboBox);
             string disconfirms = CommonForm.UnloadYNComboBox(disconfirmsComboBox);
             string sortOrder = CommonForm.UnloadSortOrderComboBox(sortOrderComboBox);
+            string defaultConfirmType = CommonForm.UnloadDefaultConfirmTypeComboBox(defaultConfirmTypeComboBox);
 
             table = shadow.GetDefaultSettings();
             for (int r = 0; r < table.GetNumRows(); r++) {
@@ -212,6 +230,8 @@ namespace PathMaker {
                     CommonForm.SetTableDataAndDateIfNecessary(table, r, disconfirms, TableColumns.NameValuePairs.Value, TableColumns.NameValuePairs.ValueDateStamp);
                 else if (name.Equals(Strings.DefaultSettingsStateSortOrder))
                     CommonForm.SetTableDataAndDateIfNecessary(table, r, sortOrder, TableColumns.NameValuePairs.Value, TableColumns.NameValuePairs.ValueDateStamp);
+                else if (name.Equals(Strings.DefaultSettingsConfirmMode))
+                    CommonForm.SetTableDataAndDateIfNecessary(table, r, defaultConfirmType, TableColumns.NameValuePairs.Value, TableColumns.NameValuePairs.ValueDateStamp);
             }
 
             shadow.SetDefaultSettings(table);
@@ -240,5 +260,7 @@ namespace PathMaker {
         public void RedoFormPromptIdsIfNecessary(string promptIdFormat) {
         //place holder
         }
+
+   
    }
 }

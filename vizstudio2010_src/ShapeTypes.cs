@@ -27,6 +27,8 @@ namespace PathMaker {
          Comment=16,
          OnPageRefIn=17,
          OnPageRefOut=18,
-         Page=19
+         Page=19,
+         AppDesc=20,
+         PrefixList = 21
     };
 }

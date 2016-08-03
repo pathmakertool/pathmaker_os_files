@@ -43,6 +43,8 @@
             this.confirmationDataGridView = new System.Windows.Forms.DataGridView();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.maxHandlingDataGridView = new System.Windows.Forms.DataGridView();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.designNotesTextBox = new System.Windows.Forms.TextBox();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -55,6 +57,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.confirmationDataGridView)).BeginInit();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.maxHandlingDataGridView)).BeginInit();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // cancelButton
@@ -64,7 +67,7 @@
             this.cancelButton.Location = new System.Drawing.Point(921, 673);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
-            this.cancelButton.TabIndex = 8;
+            this.cancelButton.TabIndex = 9;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             // 
@@ -73,7 +76,7 @@
             this.okButton.Location = new System.Drawing.Point(840, 673);
             this.okButton.Name = "okButton";
             this.okButton.Size = new System.Drawing.Size(75, 23);
-            this.okButton.TabIndex = 7;
+            this.okButton.TabIndex = 8;
             this.okButton.Text = "OK";
             this.okButton.UseVisualStyleBackColor = true;
             this.okButton.Click += new System.EventHandler(this.okButton_Click);
@@ -134,7 +137,7 @@
             this.groupBox4.Controls.Add(this.developerNotesTextBox);
             this.groupBox4.Location = new System.Drawing.Point(12, 603);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(984, 64);
+            this.groupBox4.Size = new System.Drawing.Size(484, 64);
             this.groupBox4.TabIndex = 6;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Developer Notes";
@@ -145,7 +148,7 @@
             this.developerNotesTextBox.Multiline = true;
             this.developerNotesTextBox.Name = "developerNotesTextBox";
             this.developerNotesTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.developerNotesTextBox.Size = new System.Drawing.Size(971, 33);
+            this.developerNotesTextBox.Size = new System.Drawing.Size(472, 33);
             this.developerNotesTextBox.TabIndex = 0;
             // 
             // tabControl1
@@ -189,6 +192,8 @@
             this.commandsDataGridView.Name = "commandsDataGridView";
             this.commandsDataGridView.Size = new System.Drawing.Size(958, 147);
             this.commandsDataGridView.TabIndex = 0;
+            //JDK - not sure where this coam from
+            //this.commandsDataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.commandsDataGridView_CellContentClick);
             // 
             // groupBox1
             // 
@@ -246,12 +251,32 @@
             this.maxHandlingDataGridView.Size = new System.Drawing.Size(971, 454);
             this.maxHandlingDataGridView.TabIndex = 0;
             // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.designNotesTextBox);
+            this.groupBox5.Location = new System.Drawing.Point(512, 603);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(484, 64);
+            this.groupBox5.TabIndex = 7;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Design Notes";
+            // 
+            // designNotesTextBox
+            // 
+            this.designNotesTextBox.Location = new System.Drawing.Point(6, 19);
+            this.designNotesTextBox.Multiline = true;
+            this.designNotesTextBox.Name = "designNotesTextBox";
+            this.designNotesTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.designNotesTextBox.Size = new System.Drawing.Size(474, 33);
+            this.designNotesTextBox.TabIndex = 0;
+            // 
             // InteractionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1008, 708);
+            this.ClientSize = new System.Drawing.Size(1008, 711);
             this.ControlBox = false;
+            this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.stateNameTextBox);
@@ -284,6 +309,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.confirmationDataGridView)).EndInit();
             this.tabPage3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.maxHandlingDataGridView)).EndInit();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -311,5 +338,7 @@
         private System.Windows.Forms.DataGridView confirmationDataGridView;
         private System.Windows.Forms.DataGridView maxHandlingDataGridView;
         private System.Windows.Forms.DataGridView promptsDataGridView;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.TextBox designNotesTextBox;
     }
 }

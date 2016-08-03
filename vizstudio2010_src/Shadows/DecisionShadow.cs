@@ -19,5 +19,14 @@ namespace PathMaker {
             form.ShowDialog(this);
             form.Dispose();
         }
+
+        internal override void AddDesignNotesToList(DesignNotesList designNotesList)
+        {
+            string id = GetStateId();
+            string wording = GetDesignNotes().ToString();
+
+            designNotesList.AddDesignNoteContent(id, wording);
+        }
+
     }
 }

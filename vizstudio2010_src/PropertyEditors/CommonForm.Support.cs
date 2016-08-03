@@ -16,6 +16,29 @@ namespace PathMaker {
         // typeNames is a seed, but this will track all type names in use for this session of PathMaker
         private static List<string> activeTypeNames = null;
 
+        private static string[] typeNamesMLTesting = 
+        {
+            "Initial",
+            "Noinput 1",
+            "Noinput 2",
+            "Nomatch 1",
+            "Nomatch 2",
+            "Disconfirm 1",
+            "Disconfirm 2",
+            "Nomatch / Noinput",
+            "Nomatch 1 / Noinput 1",
+            "Nomatch 1 / Disconfirm 1",
+            "Nomatch / Noinput / Disconfirm",
+            "Nomatch 1 / Noinput 1 / Disconfirm 1",
+            "Nomatch 2 / Noinput 2",
+            "Nomatch 2 / Disconfirm 2",
+            "Nomatch 2 / Noinput 2 / Disconfirm 2",
+            "Initial / Nomatch / Noinput",
+
+            "Help",
+            "",
+        };
+
         private static string[] typeNames = 
         {
             "Initial",
@@ -41,10 +64,11 @@ namespace PathMaker {
 
         private static string[] confirmValues = 
         {
+            Strings.ConfirmNever,
             Strings.ConfirmIfNecessary,
             Strings.ConfirmAlways,
-            Strings.ConfirmNever,
         };
+
 
         private static string[] modeValues = 
         {
@@ -72,8 +96,14 @@ namespace PathMaker {
             Strings.HighlightColorYellow,
             Strings.HighlightColorGreen,
             Strings.HighlightColorPink,
+            Strings.HighlightColorViolet,
             Strings.HighlightColorAqua,
+            Strings.HighlightColorTeal,
             Strings.HighlightColorBlue,
+            Strings.HighlightColorGrey,
+            Strings.HighlightColorYellow2,
+            Strings.HighlightColorGrey2,
+            Strings.HighlightColorTurquoise,
         };
 
         private static string[] sortOrderValues = 
@@ -81,6 +111,7 @@ namespace PathMaker {
             Strings.StateSortOrderAlphaNumerical,
             Strings.StateSortOrderNumericalOnly,
             Strings.StateSortOrderVisioHeuristic,
+            Strings.StateSortOrderVisioPageGroups,
         };
 
         private class ComboBoxItem {
@@ -93,15 +124,21 @@ namespace PathMaker {
             public const string ValueMemberName = "Value";
         }
 
-        public static void ApplyCommonDataGridViewSettings<T>(DataGridView gridView, bool allowUserToAddAndDelete) where T : new() {
+        public static void ApplyCommonDataGridViewSettings<T>(DataGridView gridView, bool allowUserToAddAndDelete) where T : new()
+        {
+
+            //Boolean firstTimeLoadingThisRow = true;//JDK need a way to determine if this should be true or false
+
             if (StateIdErrorProvider != null)
                 StateIdErrorProvider.Clear();
 
-            if (allowUserToAddAndDelete) {
+            if (allowUserToAddAndDelete)
+            {
                 gridView.AllowUserToAddRows = true;
                 gridView.AllowUserToDeleteRows = true;
             }
-            else {
+            else
+            {
                 gridView.AllowUserToAddRows = false;
                 gridView.AllowUserToDeleteRows = false;
             }
@@ -109,29 +146,49 @@ namespace PathMaker {
             // if there are indent/outdent columns, set them up here
             DataGridViewColumn indentColumn = gridView.Columns[Strings.IndentColumnName];
             DataGridViewColumn outdentColumn = gridView.Columns[Strings.OutdentColumnName];
-            if (indentColumn != null) {
+            if (indentColumn != null)
+            {
                 indentColumn.FillWeight = IndentOutdentColumnFillWeight;
                 indentColumn.MinimumWidth = IndentOutdentColumnMinimumWidth;
                 indentColumn.Resizable = DataGridViewTriState.False;
                 gridView.CellContentClick -= new DataGridViewCellEventHandler(OnCellContentClick);
                 gridView.CellContentClick += new DataGridViewCellEventHandler(OnCellContentClick);
             }
-            if (outdentColumn != null) {
+            if (outdentColumn != null)
+            {
                 outdentColumn.FillWeight = IndentOutdentColumnFillWeight;
                 outdentColumn.MinimumWidth = IndentOutdentColumnMinimumWidth;
                 outdentColumn.Resizable = DataGridViewTriState.False;
-                if (indentColumn == null) {
+                if (indentColumn == null)
+                {
                     // shouldn't happen but we'll be prepared for anything
                     gridView.CellContentClick -= new DataGridViewCellEventHandler(OnCellContentClick);
                     gridView.CellContentClick += new DataGridViewCellEventHandler(OnCellContentClick);
                 }
             }
 
-            gridView.CellValueChanged -= new DataGridViewCellEventHandler(OnCellValueChangedForUpdateDateColumns);
-            gridView.CellValueChanged += new DataGridViewCellEventHandler(OnCellValueChangedForUpdateDateColumns);
+            gridView.CellValueChanged -= new DataGridViewCellEventHandler(OnCellValueChangedForUpdateDateColumns);//JDK modified to store version data instead of dates
+            gridView.CellValueChanged += new DataGridViewCellEventHandler(OnCellValueChangedForUpdateDateColumns);//JDK modified to store version data instead of dates
 
-            gridView.CellFormatting -= new DataGridViewCellFormattingEventHandler(OnCellFormattingForHighlighting);
-            gridView.CellFormatting += new DataGridViewCellFormattingEventHandler(OnCellFormattingForHighlighting);
+            gridView.CellFormatting -= new DataGridViewCellFormattingEventHandler(OnCellFormattingForHighlighting);//JDK modified to store version data instead of dates
+            gridView.CellFormatting += new DataGridViewCellFormattingEventHandler(OnCellFormattingForHighlighting);//JDK modified to store version data instead of dates
+
+            gridView.CellClick += new DataGridViewCellEventHandler(OnCellContentClick);
+            gridView.CellClick -= new DataGridViewCellEventHandler(OnCellContentClick);
+            gridView.CellContentClick += new DataGridViewCellEventHandler(OnCellContentClick);
+            gridView.CellContentClick -= new DataGridViewCellEventHandler(OnCellContentClick);
+            gridView.CellContentDoubleClick += new DataGridViewCellEventHandler(OnCellContentClick);
+            gridView.CellContentDoubleClick -= new DataGridViewCellEventHandler(OnCellContentClick);
+
+            //JDK - need to find a way to only run this for new rows or first time thru - works for forcing the confirm type to default 
+            //if (firstTimeLoadingThisRow)
+            {
+                //gridView.RowsAdded += new DataGridViewRowsAddedEventHandler(OnCellDropBoxCellSettingDefault);//JDK
+                
+                //gridView.CellFormatting -= new DataGridViewCellFormattingEventHandler(OnCellDropBoxCellSettingDefault);//JDK
+                //gridView.CellFormatting += new DataGridViewCellFormattingEventHandler(OnCellDropBoxCellSettingDefault);//JDK
+                //firstTimeLoadingThisRow = false;
+            }
 
             gridView.EditingControlShowing -= new DataGridViewEditingControlShowingEventHandler(OnEditingControlShowingForEditorHotKey);
             gridView.EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(OnEditingControlShowingForEditorHotKey);
@@ -152,7 +209,8 @@ namespace PathMaker {
             gridView.DataError += new DataGridViewDataErrorEventHandler(OnGridViewDataError);
 
             //Context Menu pop up for short cuts
-            if (typeof(MaxHandlingRow) != typeof(T)) {
+            if (typeof(MaxHandlingRow) != typeof(T))
+            {
                 gridView.ContextMenuStrip = new ContextMenuStrip();
                 ToolStripMenuItem menuItem = new ToolStripMenuItem(Strings.MoveRowUpText, null, new EventHandler(PopUp_Clicked<T>));
                 menuItem.ShortcutKeyDisplayString = Keys.PageUp.ToString();
@@ -170,7 +228,8 @@ namespace PathMaker {
                 menuItem.Tag = Keys.F2;
                 gridView.ContextMenuStrip.Items.Add(menuItem);
 
-                if (gridView.AllowUserToAddRows) {
+                if (gridView.AllowUserToAddRows)
+                {
                     menuItem = new ToolStripMenuItem(Strings.InsertRowText, null, new EventHandler(PopUp_Clicked<T>));
                     menuItem.ShortcutKeyDisplayString = Keys.Insert.ToString();
                     menuItem.Tag = Keys.Insert;
@@ -182,7 +241,8 @@ namespace PathMaker {
                     gridView.ContextMenuStrip.Items.Add(menuItem);
                 }
 
-                if (gridView.AllowUserToAddRows || typeof(TransitionRow) == typeof(T) || typeof(CommandTransitionRow) == typeof(T)) {
+                if (gridView.AllowUserToAddRows || typeof(TransitionRow) == typeof(T) || typeof(CommandTransitionRow) == typeof(T))
+                {
                     menuItem = new ToolStripMenuItem(Strings.DeleteRowText, null, new EventHandler(PopUp_Clicked<T>));
                     menuItem.Tag = Keys.Delete;
                     menuItem.ShortcutKeyDisplayString = Keys.Delete.ToString();
@@ -256,7 +316,24 @@ namespace PathMaker {
             column.DataSource = values;
         }
 
-        private static void LoadComboBoxColumn(DataGridView gridView, string columnName, string[] values) {
+        private static void LoadComboBoxColumn(DataGridView gridView, string columnName, string[] values, string defaultConfirmType) {
+            DataGridViewComboBoxColumn column = gridView.Columns[columnName] as DataGridViewComboBoxColumn;
+            
+            //string myDefaultConfirmType = CommonForm.
+            
+            column.Items.Clear();
+            //column.DataSource = values;
+            column.Items.Add(defaultConfirmType); //add the default first then overlay the others - skipping any dupes
+            foreach (string v in values)
+            {
+                if (column.Items.IndexOf(v) < 0)
+                   column.Items.Add(v);
+            }
+        }
+
+ 
+        private static void LoadComboBoxColumn(DataGridView gridView, string columnName, string[] values)
+        {
             DataGridViewComboBoxColumn column = gridView.Columns[columnName] as DataGridViewComboBoxColumn;
             column.Items.Clear();
             foreach (string v in values)
@@ -365,7 +442,9 @@ namespace PathMaker {
         }
 
         private static void OnCommandTransitionDefaultValuesNeeded(object sender, DataGridViewRowEventArgs e) {
-            e.Row.Cells[CommandTransitionRow.ConfirmColumnName].Value = confirmValues[0];
+            string tempValue = PathMaker.LookupStartShadow().GetDefaultConfirmMode();//   .GetDefaultConfirmMode();
+            //e.Row.Cells[CommandTransitionRow.ConfirmColumnName].Value = tempValue; //DefaultConfirmModeValue - JDK supposed to be the new default value = "Never"
+            e.Row.Cells[CommandTransitionRow.ConfirmColumnName].Value = tempValue;//old default value was "If Necessary" - changed the order now
         }
 
         static void OnPromptTypeDefaultValuesNeeded(object sender, DataGridViewRowEventArgs e) {
@@ -422,8 +501,8 @@ namespace PathMaker {
 
                 // it's one row of nothing if there are no commands
                 if (option == null || confirm == null)
-                    //return null;
-                    return confirmOptions;//JDK fixed bug in Confirmations section for Globals on START shape
+                    //JDK was this - return null;
+                    return confirmOptions;
 
                 // if confirm is never it shouldn't be in the list of things to confirm
                 if (confirm.Equals(Strings.ConfirmNever))
@@ -441,9 +520,9 @@ namespace PathMaker {
 
                 option = option.Trim();
                 if (option != null && !confirmOptions.Contains(option))
-                    confirmOptions.Add(option);
+                    confirmOptions.Add(option);//JDK options appear to get added correctly here
             }
-            return confirmOptions;
+            return confirmOptions;//JDK - this object is not populated when it returns to calling routine
         }
 
         static void StateNumberKeyHandler(object sender, KeyPressEventArgs e) {
@@ -478,9 +557,10 @@ namespace PathMaker {
             string dateColumnName = columnName + Strings.DateStampColumnSuffix;
 
             if (gridView.Columns.Contains(dateColumnName)) {
-                DateTime date = DateTime.Today;
-                string outputDate = date.ToString(Strings.DateColumnFormatString);
-                gridView.Rows[e.RowIndex].Cells[dateColumnName].Value = outputDate;
+                //DateTime date = DateTime.Today;
+                //string outputDate = date.ToString(Strings.DateColumnFormatString);
+                string outputCurrentVersion = PathMaker.LookupChangeLogShadow().GetLastChangeVersion();
+                gridView.Rows[e.RowIndex].Cells[dateColumnName].Value = outputCurrentVersion;//JDK modified
             }
         }
 
@@ -503,6 +583,15 @@ namespace PathMaker {
                     string existingValue = gridView[columnIndex - 1, rowIndex].Value as string;
                     if (existingValue.StartsWith(Strings.IndentCharacterString))
                         gridView[columnIndex - 1, rowIndex].Value = existingValue.Substring(1);
+                }
+                else if (gridView.Columns[columnIndex].Name.Equals("Confirm")) {
+                //JDK we want to add the non-default values to the list box only when clicked
+                    DataGridViewComboBoxColumn col = gridView.Columns[columnIndex] as DataGridViewComboBoxColumn;
+                    foreach (string v in confirmValues)
+                    {
+                        if (col.Items.IndexOf(v) < 0)
+                            col.Items.Add(v);
+                    }
                 }
             }
         }
@@ -791,12 +880,14 @@ namespace PathMaker {
                 string promptType = gridView[promptTypeIndex, row].Value as string;
                 if (promptType != null && promptType.Length > 0) {
                     letter = promptType.ToLower().Substring(0, 1)[0];
+                    if (letter == Strings.DefaultConfirmationPromptLetter)
+                        letter = Strings.DefaultExitBridgePromptLetter; //JDK added a new prompt letter "x"
                     break;
                 }
                 row--;
             }
 
-            CalculateDefaultPromptIdIfAppropriate(gridView, e.RowIndex, e.ColumnIndex, promptIdIndex, letter);
+            CalculateDefaultPromptIdIfAppropriate(gridView, e.RowIndex, e.ColumnIndex, promptIdIndex, letter, false);
         }
 
         static void OnPromptCellValueChangedForAutoPromptId(object sender, DataGridViewCellEventArgs e) {
@@ -809,7 +900,7 @@ namespace PathMaker {
 
             int promptIdIndex = gridView.Columns[PromptRow.IdColumnName].Index;
 
-            CalculateDefaultPromptIdIfAppropriate(gridView, e.RowIndex, e.ColumnIndex, promptIdIndex, Strings.DefaultPromptLetter);
+            CalculateDefaultPromptIdIfAppropriate(gridView, e.RowIndex, e.ColumnIndex, promptIdIndex, Strings.DefaultPromptLetter, false);
         }
 
         static void OnConfirmationPromptCellValueChangedForAutoPromptId(object sender, DataGridViewCellEventArgs e) {
@@ -822,10 +913,10 @@ namespace PathMaker {
 
             int promptIdIndex = gridView.Columns[ConfirmationPromptRow.IdColumnName].Index;
 
-            CalculateDefaultPromptIdIfAppropriate(gridView, e.RowIndex, e.ColumnIndex, promptIdIndex, Strings.DefaultConfirmationPromptLetter);
+            CalculateDefaultPromptIdIfAppropriate(gridView, e.RowIndex, e.ColumnIndex, promptIdIndex, Strings.DefaultConfirmationPromptLetter, true);
         }
 
-        public static void CalculateDefaultPromptIdIfAppropriate(DataGridView gridView, int rowIndex, int wordingColumn, int promptIdColumn, char letter) {
+        public static void CalculateDefaultPromptIdIfAppropriate(DataGridView gridView, int rowIndex, int wordingColumn, int promptIdColumn, char letter, Boolean fromConfirmGrid) {
             if (gridView[wordingColumn, rowIndex].Value == null || gridView[wordingColumn, rowIndex].Value.Equals("") ||
                 gridView[wordingColumn, rowIndex].Value.ToString().Trim().StartsWith(Strings.CalculatedPromptStartString) ||
                 gridView[wordingColumn, rowIndex].Value.ToString().Trim().StartsWith(Strings.PromptTypeMacroStartString)) {
@@ -872,6 +963,9 @@ namespace PathMaker {
                     }
                 }
 
+                if (letter == Strings.DefaultConfirmationPromptLetter && !fromConfirmGrid)
+                    letter = Strings.DefaultExitBridgePromptLetter; //JDK added a new prompt letter "x" - ADD CODE TO SKIP FOR REAL CONFIRM PROMPTS
+
                 string newPromptId;
                 if (statePrefix != null) {
                     if (promptIdFormat.Equals(Strings.PromptIdFormatFull))
@@ -895,8 +989,25 @@ namespace PathMaker {
                 Common.ErrorMessage("Unknown prompt id format");
         }
 
+        static void OnCellDropBoxCellSettingDefault(object sender, DataGridViewCellFormattingEventArgs f) {
+            DataGridView gridView = sender as DataGridView;
+            if (gridView == null)
+                return;
+
+            if (!(f.ColumnIndex >= 0 && f.RowIndex >= 0))
+                return;
+            
+            DataGridViewColumn col = gridView.Columns[f.ColumnIndex];
+            if (col.Name.Equals("Confirm"))
+                f.Value = PathMaker.LookupStartShadow().GetDefaultConfirmMode();
+        }
+
+
+
         static void OnCellFormattingForHighlighting(object sender, DataGridViewCellFormattingEventArgs e) {
             DataGridView gridView = sender as DataGridView;
+            double decimalValue;
+
             if (gridView == null)
                 return;
 
@@ -908,14 +1019,25 @@ namespace PathMaker {
             if (col.Name.Contains(Strings.DateStampColumnSuffix))
                 return;
             if (gridView.Columns.Contains(col.Name + Strings.DateStampColumnSuffix)) {
-                string dateString = gridView.Rows[e.RowIndex].Cells[col.Name + Strings.DateStampColumnSuffix].Value as string;
-                if (dateString != null) {
-                    DateTime date;
-                    if (DateTime.TryParse(dateString, out date)) {
-                        Color? color = Common.GetHighlightColor(date);
+                //string dateString = gridView.Rows[e.RowIndex].Cells[col.Name + Strings.DateStampColumnSuffix].Value as string;
+                string versionString = gridView.Rows[e.RowIndex].Cells[col.Name + Strings.DateStampColumnSuffix].Value as string;
+                //DateTime date;
+                //if (DateTime.TryParse(dateString, out date)) {
+                    //Color? color = Common.GetHighlightColor(date);
+
+                if (versionString != null)
+                {
+                    decimalValue = Common.ForcedStringVersionToDouble(versionString);
+                }
+                else 
+                { 
+                    decimalValue = 0.0;
+                }
+                //if (Double.TryParse(versionString, out decimalValue)) {
+                if (decimalValue >= 0.0) {
+                    Color? color = Common.GetHighlightColor(versionString);
                         if (color != null)
                             e.CellStyle.BackColor = color.Value;
-                    }
                 }
             }
         }

@@ -147,6 +147,11 @@ namespace PathMaker {
         }
 
         internal string GetData(int row, int column) {
+            //shape compatibility fix for old shape data table - JDK 08-25-15
+            if (column >= numColumns)
+            {
+                return "";
+            }
             System.Diagnostics.Debug.Assert(row < numRows && column < numColumns);
             string tmp = data[row, column];
             if (tmp == null)
@@ -159,6 +164,11 @@ namespace PathMaker {
         }
 
         internal void SetData(int row, int column, string value) {
+            //shape compatibility fix for old shape data table - JDK 08-25-15
+            if (column >= numColumns)
+            {
+                data[row, column] = "";
+            }
             System.Diagnostics.Debug.Assert(row < numRows && column < numColumns);
             if (value == null)
                 data[row, column] = "";

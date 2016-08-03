@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using Microsoft.Office.Interop.Visio;
 using System.Drawing;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace PathMaker {
     /**
@@ -16,6 +17,7 @@ namespace PathMaker {
     class Common {
         private static ResourceManager theResourceManager = new ResourceManager(Strings.ResourceFileName, Assembly.GetExecutingAssembly());
         private static Dictionary<string, int> earliestPageReference;
+        private static Dictionary<string, int> stateToPageReference;
 
         public static string GetResourceString(string resourceName) {
             string resourceValue = "";
@@ -178,6 +180,21 @@ namespace PathMaker {
                 return "";
         }
 
+        internal static string CleanupVersionLabel(string versionLabel)
+        {
+            string pattern = "[^0-9.]+";
+            string replacement = "";
+            Regex rgx = new Regex(pattern);
+            if (rgx.IsMatch(versionLabel))
+            {
+                versionLabel = rgx.Replace(versionLabel, replacement);
+                if (versionLabel.Equals(".")){
+                    versionLabel = "0.0";
+                }
+            }
+            return versionLabel;
+        }
+
         internal static string GetCellString(Shape shape, string cellName) {
             return FormulaStringToString(GetCellFormula(shape, cellName));
         }
@@ -279,6 +296,12 @@ namespace PathMaker {
                 case ShapeTypes.ChangeLog:
                     shadow = new ChangeLogShadow(shape);
                     break;
+                case ShapeTypes.AppDesc:
+                    shadow = new AppDescShadow(shape);
+                    break;
+                case ShapeTypes.PrefixList:
+                    shadow = new PrefixListShadow(shape);
+                    break;
                 case ShapeTypes.Comment:
                     shadow = new IgnoredShadow(shape);
                     break;
@@ -370,6 +393,16 @@ namespace PathMaker {
                 System.Diagnostics.Debug.WriteLine(msg);
         }
 
+        internal static void WarningMessage(string msg)
+        {
+            bool useMessageBoxes = true;
+
+            if (useMessageBoxes)
+                System.Windows.Forms.MessageBox.Show(msg, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            else
+                System.Diagnostics.Debug.WriteLine(msg);
+        }
+
         internal static void LockShapeText(Shape shape) {
             shape.get_CellsSRC((short)VisSectionIndices.visSectionObject,
                                     (short)VisRowIndices.visRowLock,
@@ -399,13 +432,15 @@ namespace PathMaker {
             return image;
         }
 
-        public static System.Drawing.Color? GetHighlightColor(string dateString) {
+        //JDK killed this one for the highlight fixes
+        /*public static System.Drawing.Color? GetHighlightColor(string dateString) {
             DateTime date;
             if (DateTime.TryParse(dateString, out date))
                 return GetHighlightColor(date);
             else
                 return null;
         }
+         * */
 
         /**
          * Returns the highlight color to be used given a change date. 
@@ -421,6 +456,29 @@ namespace PathMaker {
             return ConvertColorStringToColor(color);
         }
 
+        /**
+         * Returns the highlight color to be used given a change version stamp. 
+         * If no highlight is needed, it will return the DefaultHighlightColor
+         */
+        public static System.Drawing.Color? GetHighlightColor(string versionLabel)
+        {
+            ChangeLogShadow shadow = PathMaker.LookupChangeLogShadow();
+            if (shadow == null)
+                return null;
+
+            String color = Strings.HighlightColorNone;
+            if (versionLabel == null || versionLabel == "")
+            {
+               versionLabel = Strings.DefaultVersionStamp;
+            }
+            else
+            {
+                color = shadow.GetColorStringForChange(versionLabel);
+            }
+
+            return ConvertColorStringToColor(color);
+        }
+        
         public static System.Drawing.Color? ConvertColorStringToColor(string color) {
             if (color.Equals(Strings.HighlightColorNone))
                 return null;
@@ -434,6 +492,18 @@ namespace PathMaker {
                 return System.Drawing.Color.Pink;
             else if (color.Equals(Strings.HighlightColorYellow))
                 return System.Drawing.Color.Yellow;
+            else if (color.Equals(Strings.HighlightColorTeal))
+                return System.Drawing.Color.Teal;
+            else if (color.Equals(Strings.HighlightColorGrey))
+                return System.Drawing.Color.Gray;
+            else if (color.Equals(Strings.HighlightColorViolet))
+                return System.Drawing.Color.Violet;
+            else if (color.Equals(Strings.HighlightColorYellow2))
+                return System.Drawing.Color.YellowGreen;
+            else if (color.Equals(Strings.HighlightColorTurquoise))
+                return System.Drawing.Color.Turquoise;
+            else if (color.Equals(Strings.HighlightColorGrey2))
+                return System.Drawing.Color.DarkSlateGray;
             else
                 return null;
         }
@@ -458,13 +528,89 @@ namespace PathMaker {
             return recordingList;
         }
 
+        internal static PromptRecordingList GetPromptRecordingListVer(String onOrAfterVersion)
+        {
+            PromptRecordingList recordingList = new PromptRecordingList();
+
+            foreach (Shadow shadow in PathMaker.LookupAllShadows())
+            {
+                shadow.AddPromptsToRecordingListVer(recordingList, onOrAfterVersion);
+            }
+            return recordingList;
+        }
+
+        internal static DesignNotesList GetDesignNotesList() {
+            DesignNotesList designNotesList = new DesignNotesList();
+
+            foreach (Shadow shadow in PathMaker.LookupAllShadows())
+            {
+                shadow.AddDesignNotesToList(designNotesList);
+                //shadow.AddPromptsToRecordingList(recordingList, onOrAfterDate);
+            }
+            return designNotesList;
+        }
+
         // will make up a very early date if one is not provided
         internal static DateTime ForcedStringToDate(string dateString) {
             DateTime date;
             if (dateString != null && DateTime.TryParse(dateString, out date))
                 return date;
             else
-                return new DateTime(1966, 9, 3);
+                return new DateTime(1965, 4, 1);
+        }
+
+        internal static Double ForcedStringVersionToDouble(string versionInfo)
+        {
+            Double tempVersionData;
+            string[] versionParts;
+            string tempPart1 = "";
+            string tempPart2 = "";
+            char[] splitChars = { '.' };
+            //string invalidChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            //char[] invalidCharsArray = invalidChars.ToCharArray();
+
+            //scrub version strings for alphas
+            //string pattern = "[a-gA-G-]+";
+            //string replacement = "";
+            //Regex rgx = new Regex(pattern);
+            //if (rgx.IsMatch(versionInfo)) {
+                //versionInfo = rgx.Replace(versionInfo, replacement);
+           //}
+
+            if (versionInfo.Equals(".") || versionInfo.ToUpper().Contains("INITIAL") || versionInfo == null)
+            {
+                versionInfo = "0.0";
+            }
+
+            versionParts = versionInfo.Split(splitChars);
+            if (versionParts.Length >= 3)
+            {
+                tempPart1 = versionParts[1].Replace(",","");
+                tempPart2 = versionParts[2].Replace(",","");
+            
+                if (versionParts[1].Length == 1) {
+                    tempPart1 = "0" + versionParts[1].Replace(",","");
+                }
+                if (versionParts[2].Length == 1)
+                {
+                    tempPart2 = "0" + versionParts[2].Replace(",", "");
+                }
+                tempVersionData = Convert.ToDouble(versionParts[0].Replace(",", "") + '.' + tempPart1 + tempPart2);
+            } else if (versionParts.Length == 2) {
+                tempPart1 = versionParts[1];
+                if (versionParts[1].Length == 1)
+                {
+                    tempPart1 = "0" + versionParts[1].Replace(",", "");
+                }
+                tempVersionData = Convert.ToDouble(versionParts[0].Replace(",", "") + '.' + tempPart1);
+            } else{
+                if (versionInfo == "")
+                {
+                    versionInfo = "0.0";
+                }
+                tempVersionData = 0.0;//hard-coded to prevent blow-ups
+            }
+            return tempVersionData;
         }
 
         internal static void ApplyPromptRecordingList(PromptRecordingList recordingList) {
@@ -482,6 +628,39 @@ namespace PathMaker {
             }
             return maxDate;
         }
+
+        //JDK this was added to help with highlight colors with multiple versions on the same day
+        internal static String MaxVersionWithDateColumn(string version, Table table, int column)
+        {
+            String maxVersion = version;
+            String tempVersionStampFix = "";
+            //double decimalValue = 0;
+            for (int r = 0; r < table.GetNumRows(); r++)
+            {
+                String lastVersionStamp = table.GetData(r, column);
+
+                //NEW CODE STARTS HERE
+                //if (lastVersionStamp.Trim().IndexOf("/")>=0 || lastVersionStamp.Trim().Equals(""))
+                String tempCleanedVerLabel = CleanupVersionLabel(lastVersionStamp);
+                if (!tempCleanedVerLabel.Equals(lastVersionStamp))
+                {
+                    DateTime tempDTStamp;
+                    if (DateTime.TryParse(lastVersionStamp, out tempDTStamp))
+                    {
+                        tempVersionStampFix = PathMaker.LookupChangeLogShadow().GetVersionStringForChange(tempDTStamp);
+                        lastVersionStamp = tempVersionStampFix;
+                        //lastVersionStamp = PathMaker.LookupChangeLogShadow().GetValidVersionString(PathMaker.LookupChangeLogShadow().GetChangeLog(), tempVersionStampFix);
+                        table.SetData(r, column, lastVersionStamp);//JDK temporarily removed for testing
+                    }
+                }
+                if (Common.ForcedStringVersionToDouble(lastVersionStamp) > Common.ForcedStringVersionToDouble(maxVersion))
+                    maxVersion = lastVersionStamp;
+
+                //NEW CODE ENDS HERE
+            }
+            return maxVersion;
+        }
+
 
         internal static string MakeLabelName(string label) {
             string pretty = label;
@@ -518,6 +697,69 @@ namespace PathMaker {
                 StateShadow stateShadow = s as StateShadow;
                 if (stateShadow != null)
                     count += stateShadow.RedoPromptIds(count, promptIdFormat);
+            }
+        }
+
+        public static void RedoAllHiddenPromptMarkers()
+        {
+            //the start step has globals and default confirmation prompts that must be modified as well
+            Shadow startStep = PathMaker.LookupStartShadow();
+            ChangeLogShadow changeLogShadow = PathMaker.LookupChangeLogShadow();
+            DateTime triggerDate;
+            DateTime.TryParse(Strings.StampFormatChangeDate, out triggerDate);
+
+            //Common.WarningMessage("changeLogShadow.GetLastChangeDate() = " + changeLogShadow.GetLastChangeDate());
+
+            if ((startStep != null) && (changeLogShadow.GetLastChangeDate() <= triggerDate))
+            {
+                string tmpAlertMsg = "* * * ALERT - CHANGE TRACKING FORMATS WILL BE UPDATED! * * *" +
+                                     "\r\n\r\nHidden date stamps will now use version numbers instead." +
+                                     "\r\n\r\nThis makes it INCOMPATIBLE with older versions of PathMaker." +
+                                     "\r\n\r\nAdd a new Revision History line for this file update process with NO HIGHLIGHT COLOR." +
+                                     "  Then select SAVE AS and create a new .VUI file once the table update is complete." +
+                                     "  You may then add a new Revision Histroy record to begin documenting your design changes with highlights." +
+                                     "  Old colors should be fine if left on during this update process.";
+
+                Common.WarningMessage(tmpAlertMsg);
+
+                //scrub the version stamps in the ChangeLogShadow before any other processing takes place - we do not want any aplhas in the version strings for float comparisons later
+                Table table = changeLogShadow.GetChangeLog();
+                String lastVersionStamp = "";
+                string tempScrubbedVer = "";
+                Boolean versionStampsUpdated = false;
+                for (int r = 0; r < table.GetNumRows(); r++)
+                {
+                    lastVersionStamp = table.GetData(r, (int)TableColumns.ChangeLog.Version);
+                    tempScrubbedVer = Common.CleanupVersionLabel(lastVersionStamp);
+                    if (!tempScrubbedVer.Equals(lastVersionStamp))
+                    {
+                        table.SetData(r, (int)TableColumns.ChangeLog.Version, tempScrubbedVer);
+                        versionStampsUpdated = true;
+                    }
+                }
+                if (versionStampsUpdated)
+                    changeLogShadow.SetChangeLog(table);
+
+                startStep.RedoHiddenDateMarkers();
+
+                List<Shadow> shadowList = PathMaker.LookupAllShadows();
+                //JDK added this to update old diagrams with hidden date stamps to new version stamp format
+                foreach (Shadow s in shadowList)
+                {
+                    StateShadow stateShadow = s as StateShadow;
+                    if (stateShadow != null && (stateShadow.GetShapeType().Equals(ShapeTypes.Play) || stateShadow.GetShapeType().Equals(ShapeTypes.Interaction)))
+                    {
+                        stateShadow.RedoHiddenDateMarkers(stateShadow);
+                        //Common.WarningMessage("Skipping RedoHiddenDateMarkers");
+                    }
+                    
+                    if (stateShadow != null && (stateShadow.GetShapeType().Equals(ShapeTypes.Decision) || stateShadow.GetShapeType().Equals(ShapeTypes.Data)))
+                    {
+                        StateWithTransitionShadow stateTranShadow = s as StateWithTransitionShadow;
+                        //Common.WarningMessage("Starting RedoHiddenDateMarkers for Decision or Data State:" + stateTranShadow.GetStateId());
+                        stateTranShadow.RedoHiddenDateMarkers(stateTranShadow);
+                    }
+                }
             }
         }
 
@@ -689,6 +931,78 @@ namespace PathMaker {
             }
 
             shadowList.Sort(StateIdShadowSorterVisioHeuristicHelper);
+        }
+
+        private static int StateIdShadowSorterVisioPageGroupHelper(Shadow a, Shadow b)
+        {
+            if (a == b)
+                return 0;
+
+            StateShadow stateA = a as StateShadow;
+            StateShadow stateB = b as StateShadow;
+            if (stateA == null)
+                return 1;
+            if (stateB == null)
+                return -1;
+
+            string stateAPrefix, stateANumber, stateAName;
+            string stateBPrefix, stateBNumber, stateBName;
+
+            StateShadow.DisectStateIdIntoParts(stateA.GetStateId(), out stateAPrefix, out stateANumber, out stateAName);
+            StateShadow.DisectStateIdIntoParts(stateB.GetStateId(), out stateBPrefix, out stateBNumber, out stateBName);
+
+            int earliestPageA = stateToPageReference[stateAPrefix + stateANumber];
+            int earliestPageB = stateToPageReference[stateBPrefix + stateBNumber];
+
+            if (earliestPageA != earliestPageB)
+                return earliestPageA - earliestPageB;
+
+            return stateA.GetStateId().CompareTo(stateB.GetStateId());
+        }
+
+        public static void StateIdShadowSorterVisioPageGrouping(List<Shadow> shadowList, Document doc, StartShadow startShadow)
+        {
+            // Try to create a group of states per Visio page then
+            // sort alphanumerically so the printing order matches the pages
+
+            //string firstPrefix = String.Empty;
+            //Shadow firstShadow = startShadow.GetFirstStateGotoTarget();
+            //if (firstShadow != null)
+            //{
+                //StateShadow firstState = firstShadow as StateShadow;
+                //string firstNumber, firstName;
+                //StateShadow.DisectStateIdIntoParts(firstState.GetStateId(), out firstPrefix, out firstNumber, out firstName);
+            //}
+
+            // make a list of first page references of each alpha prefix
+            stateToPageReference = new Dictionary<string, int>();
+            foreach (Shadow s in shadowList)
+            {
+                StateShadow sState = s as StateShadow;
+                if (sState == null)
+                    continue;
+                //int firstPageNumber;
+                int pageNumber = s.GetPageNumber();
+                string statePrefix, stateNumber, stateName;
+                StateShadow.DisectStateIdIntoParts(sState.GetStateId(), out statePrefix, out stateNumber, out stateName);
+
+                // always make this highest priority
+                //if (sState.GetStateId().Equals(firstState.GetStateId()))
+                    //firstPageNumber = pageNumber;
+
+                int earliest;
+                if (stateToPageReference.TryGetValue(statePrefix + stateNumber, out earliest))
+                {
+                    if (pageNumber < earliest)
+                        stateToPageReference[statePrefix + stateNumber] = pageNumber;
+                }
+                else
+                {
+                    stateToPageReference.Add(statePrefix + stateNumber, pageNumber);
+                }
+            }
+
+            shadowList.Sort(StateIdShadowSorterVisioPageGroupHelper);
         }
     }
 }

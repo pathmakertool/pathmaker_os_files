@@ -42,7 +42,8 @@ namespace PathMaker {
 
         ~PathRunnerBackgroundWorker() {
             if (guid != Guid.Empty) {
-                HttpWebRequest cancelRequest = HttpWebRequest.Create(Strings.SERVERNAME + "PathRunnerRequestHandler.jsp?Action=StopWalkingClientTag&ClientTag=" + guid) as HttpWebRequest;
+                HttpWebRequest cancelRequest = HttpWebRequest.Create(PathMaker.GetValidationServer() + "PathRunnerRequestHandler.jsp?Action=StopWalkingClientTag&ClientTag=" + guid) as HttpWebRequest;
+                //HttpWebRequest cancelRequest = HttpWebRequest.Create(Strings.SERVERNAME + "PathRunnerRequestHandler.jsp?Action=StopWalkingClientTag&ClientTag=" + guid) as HttpWebRequest;
                 HttpWebResponse cancelResponse = null;
 
                 try {
@@ -74,7 +75,9 @@ namespace PathMaker {
             try {
                 //Creating the Web Request.
                 guid = Guid.NewGuid();
-                httpWebRequest = HttpWebRequest.Create(Strings.SERVERNAME + Strings.VALIDATEJSPNAME + "?ClientTag=" + guid) as HttpWebRequest;
+                //string tempServerName = Shadow.validationServerIp;
+                httpWebRequest = HttpWebRequest.Create(PathMaker.GetValidationServer() + Strings.VALIDATEJSPNAME + "?ClientTag=" + guid) as HttpWebRequest;
+                //httpWebRequest = HttpWebRequest.Create(Strings.SERVERNAME + Strings.VALIDATEJSPNAME + "?ClientTag=" + guid) as HttpWebRequest;
                 //Specifing the Method
                 httpWebRequest.Method = "POST";
                 httpWebRequest.ContentType = "multipart/form-data=-----------------------------";
@@ -154,7 +157,8 @@ namespace PathMaker {
             // Check to see if the background process was cancelled.
             if (e.Cancelled || cancelUIRun) {
                 DeleteTmpFile();
-                HttpWebRequest cancelRequest = HttpWebRequest.Create(Strings.SERVERNAME + "PathRunnerRequestHandler.jsp?Action=StopWalkingClientTag&ClientTag=" + guid) as HttpWebRequest;
+                HttpWebRequest cancelRequest = HttpWebRequest.Create(PathMaker.GetValidationServer() + "PathRunnerRequestHandler.jsp?Action=StopWalkingClientTag&ClientTag=" + guid) as HttpWebRequest;
+                //HttpWebRequest cancelRequest = HttpWebRequest.Create(Strings.SERVERNAME + "PathRunnerRequestHandler.jsp?Action=StopWalkingClientTag&ClientTag=" + guid) as HttpWebRequest;
                 HttpWebResponse cancelResponse = null;
 
                 try {
@@ -237,7 +241,8 @@ namespace PathMaker {
                     }
 
                     wc.UseDefaultCredentials = true;
-                    wc.DownloadFileAsync(new Uri(Strings.SERVERNAME + Strings.SAVEJSPNAME + Strings.FILENAME + filename), debugFileName);
+                    wc.DownloadFileAsync(new Uri(PathMaker.GetValidationServer() + Strings.SAVEJSPNAME + Strings.FILENAME + filename), debugFileName);
+                    //wc.DownloadFileAsync(new Uri(Strings.SERVERNAME + Strings.SAVEJSPNAME + Strings.FILENAME + filename), debugFileName);
                 }
                 catch (WebException e) {
                     MessageBox.Show("Error downloading debug file: " + e.Message, Strings.UISPECVALIDATE);
